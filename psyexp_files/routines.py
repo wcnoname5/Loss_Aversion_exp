@@ -1,8 +1,8 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2023.2.3),
-    on July 19, 2024, at 17:13
+    on July 22, 2024, at 09:03
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -323,27 +323,13 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         flipHoriz=False, flipVert=False,
         texRes=128.0, interpolate=True, depth=0.0)
     choice_resp = keyboard.Keyboard()
-    Left = visual.TextStim(win=win, name='Left',
-        text='Left Choice',
-        font='Open Sans',
-        units='pix', pos=(-300, 200), height=32.0, wrapWidth=None, ori=0.0, 
-        color='white', colorSpace='rgb', opacity=None, 
-        languageStyle='LTR',
-        depth=-3.0);
-    Right = visual.TextStim(win=win, name='Right',
-        text='Right Choice',
-        font='Open Sans',
-        units='pix', pos=(+300, 200), height=32.0, wrapWidth=None, ori=0.0, 
-        color='white', colorSpace='rgb', opacity=None, 
-        languageStyle='LTR',
-        depth=-4.0);
     confirm_text_2fac = visual.TextStim(win=win, name='confirm_text_2fac',
-        text='',
+        text='Press F/J to choose Left/Right Lottery',
         font='Open Sans',
         pos=(0, -200), height=30.0, wrapWidth=None, ori=0.0, 
         color='white', colorSpace='rgb', opacity=None, 
         languageStyle='LTR',
-        depth=-5.0);
+        depth=-3.0);
     confirm_resp = keyboard.Keyboard()
     
     # --- Initialize components for Routine "Fixation" ---
@@ -353,30 +339,6 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         ori=0.0, pos=(0, 0), anchor='center',
         lineWidth=1.0,     colorSpace='rgb',  lineColor='white', fillColor='white',
         opacity=None, depth=0.0, interpolate=True)
-    
-    # --- Initialize components for Routine "slider_task" ---
-    inform_text = visual.TextStim(win=win, name='inform_text',
-        text='Choose ?',
-        font='Open Sans',
-        pos=(0, 200), height=50.0, wrapWidth=None, ori=0.0, 
-        color='white', colorSpace='rgb', opacity=None, 
-        languageStyle='LTR',
-        depth=0.0);
-    slider = visual.Slider(win=win, name='slider',
-        startValue=None, size=(720, 80), pos=(0, 0), units=win.units,
-        labels=["0", "100"], ticks=(1, 2, 3, 4, 5), granularity=0.0,
-        style='rating', styleTweaks=(), opacity=None,
-        labelColor='LightGray', markerColor='Red', lineColor='White', colorSpace='rgb',
-        font='Open Sans', labelHeight=50.0,
-        flip=False, ori=0.0, depth=-1, readOnly=False)
-    confirm_text = visual.TextStim(win=win, name='confirm_text',
-        text='',
-        font='Open Sans',
-        pos=(0, -200), height=30.0, wrapWidth=None, ori=0.0, 
-        color='white', colorSpace='rgb', opacity=None, 
-        languageStyle='LTR',
-        depth=-3.0);
-    confirm_resp_2 = keyboard.Keyboard()
     
     # create some handy timers
     if globalClock is None:
@@ -400,13 +362,11 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
     event.clearEvents('keyboard')
     KeyResponse = False
     confirm_text = ""
-    left_text_color = "white"
-    right_text_color = "white"
     confirm_resp.keys = []
     confirm_resp.rt = []
     _confirm_resp_allKeys = []
     # keep track of which components have finished
-    choice_taskComponents = [Loss_image, choice_resp, Left, Right, confirm_text_2fac, confirm_resp]
+    choice_taskComponents = [Loss_image, choice_resp, confirm_text_2fac, confirm_resp]
     for thisComponent in choice_taskComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -480,55 +440,12 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         if len(keys):
             KeyResponse = True
             if 'f' in keys:
-               confirm_text= "A"
-               left_text_color = "red"
-               right_text_color = "white"
+                confirm_text= "A"
             elif 'j' in keys:
                 confirm_text= "B"
-                left_text_color = "white"
-                right_text_color = "red"
+            confirm_text_2fac.text = f"{confirm_text} Chosen \n Press Space to Confirm"
         #        slider.rating = True
         #        KeyResponse = True
-        
-        # *Left* updates
-        
-        # if Left is starting this frame...
-        if Left.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            Left.frameNStart = frameN  # exact frame index
-            Left.tStart = t  # local t and not account for scr refresh
-            Left.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(Left, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'Left.started')
-            # update status
-            Left.status = STARTED
-            Left.setAutoDraw(True)
-        
-        # if Left is active this frame...
-        if Left.status == STARTED:
-            # update params
-            pass
-        
-        # *Right* updates
-        
-        # if Right is starting this frame...
-        if Right.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            Right.frameNStart = frameN  # exact frame index
-            Right.tStart = t  # local t and not account for scr refresh
-            Right.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(Right, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'Right.started')
-            # update status
-            Right.status = STARTED
-            Right.setAutoDraw(True)
-        
-        # if Right is active this frame...
-        if Right.status == STARTED:
-            # update params
-            Right.setColor('white', colorSpace='rgb', log=False)
         
         # *confirm_text_2fac* updates
         
@@ -548,7 +465,7 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         # if confirm_text_2fac is active this frame...
         if confirm_text_2fac.status == STARTED:
             # update params
-            confirm_text_2fac.setText(f"You've Choose {confirm_text} \n press Space to comfirm" , log=False)
+            confirm_text_2fac.setText("Fucking \n Press Space to Continue", log=False)
         
         # *confirm_resp* updates
         waitOnFlip = False
@@ -603,6 +520,7 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
     for thisComponent in choice_taskComponents:
         if hasattr(thisComponent, "setAutoDraw"):
             thisComponent.setAutoDraw(False)
+    thisExp.addData('choice_task.stopped', globalClock.getTime())
     # check responses
     if choice_resp.keys in ['', [], None]:  # No response was made
         choice_resp.keys = None
@@ -611,7 +529,6 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         thisExp.addData('choice_resp.rt', choice_resp.rt)
         thisExp.addData('choice_resp.duration', choice_resp.duration)
     thisExp.nextEntry()
-    thisExp.addData('choice_task.stopped', globalClock.getTime())
     # check responses
     if confirm_resp.keys in ['', [], None]:  # No response was made
         confirm_resp.keys = None
@@ -715,184 +632,6 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         routineTimer.reset()
     else:
         routineTimer.addTime(-0.500000)
-    
-    # --- Prepare to start Routine "slider_task" ---
-    continueRoutine = True
-    # update component parameters for each repeat
-    thisExp.addData('slider_task.started', globalClock.getTime())
-    slider.reset()
-    # Run 'Begin Routine' code from code
-    event.clearEvents('keyboard')
-    slider.markerPos = 3
-    key_move = False
-    confirm_resp_2.keys = []
-    confirm_resp_2.rt = []
-    _confirm_resp_2_allKeys = []
-    # keep track of which components have finished
-    slider_taskComponents = [inform_text, slider, confirm_text, confirm_resp_2]
-    for thisComponent in slider_taskComponents:
-        thisComponent.tStart = None
-        thisComponent.tStop = None
-        thisComponent.tStartRefresh = None
-        thisComponent.tStopRefresh = None
-        if hasattr(thisComponent, 'status'):
-            thisComponent.status = NOT_STARTED
-    # reset timers
-    t = 0
-    _timeToFirstFrame = win.getFutureFlipTime(clock="now")
-    frameN = -1
-    
-    # --- Run Routine "slider_task" ---
-    routineForceEnded = not continueRoutine
-    while continueRoutine:
-        # get current time
-        t = routineTimer.getTime()
-        tThisFlip = win.getFutureFlipTime(clock=routineTimer)
-        tThisFlipGlobal = win.getFutureFlipTime(clock=None)
-        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-        # update/draw components on each frame
-        
-        # *inform_text* updates
-        
-        # if inform_text is starting this frame...
-        if inform_text.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            inform_text.frameNStart = frameN  # exact frame index
-            inform_text.tStart = t  # local t and not account for scr refresh
-            inform_text.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(inform_text, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'inform_text.started')
-            # update status
-            inform_text.status = STARTED
-            inform_text.setAutoDraw(True)
-        
-        # if inform_text is active this frame...
-        if inform_text.status == STARTED:
-            # update params
-            pass
-        
-        # *slider* updates
-        
-        # if slider is starting this frame...
-        if slider.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            slider.frameNStart = frameN  # exact frame index
-            slider.tStart = t  # local t and not account for scr refresh
-            slider.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(slider, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'slider.started')
-            # update status
-            slider.status = STARTED
-            slider.setAutoDraw(True)
-        
-        # if slider is active this frame...
-        if slider.status == STARTED:
-            # update params
-            pass
-        # Run 'Each Frame' code from code
-        keys = event.getKeys()
-        
-        if len(keys):
-            key_move = True
-            if 'f' in keys:
-                slider.markerPos = slider.markerPos - 1
-        #        slider.rating = True
-            elif 'j' in keys:
-                slider.markerPos = slider.markerPos  + 1
-        #        slider.rating = True
-            slider.Response = slider.markerPos
-            slider.rating = slider.markerPos
-        
-        # *confirm_text* updates
-        
-        # if confirm_text is starting this frame...
-        if confirm_text.status == NOT_STARTED and key_move:
-            # keep track of start time/frame for later
-            confirm_text.frameNStart = frameN  # exact frame index
-            confirm_text.tStart = t  # local t and not account for scr refresh
-            confirm_text.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(confirm_text, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'confirm_text.started')
-            # update status
-            confirm_text.status = STARTED
-            confirm_text.setAutoDraw(True)
-        
-        # if confirm_text is active this frame...
-        if confirm_text.status == STARTED:
-            # update params
-            confirm_text.setText(slider.markerPos, log=False)
-        
-        # *confirm_resp_2* updates
-        waitOnFlip = False
-        
-        # if confirm_resp_2 is starting this frame...
-        if confirm_resp_2.status == NOT_STARTED and key_move:
-            # keep track of start time/frame for later
-            confirm_resp_2.frameNStart = frameN  # exact frame index
-            confirm_resp_2.tStart = t  # local t and not account for scr refresh
-            confirm_resp_2.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(confirm_resp_2, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'confirm_resp_2.started')
-            # update status
-            confirm_resp_2.status = STARTED
-            # keyboard checking is just starting
-            waitOnFlip = True
-            win.callOnFlip(confirm_resp_2.clock.reset)  # t=0 on next screen flip
-            win.callOnFlip(confirm_resp_2.clearEvents, eventType='keyboard')  # clear events on next screen flip
-        if confirm_resp_2.status == STARTED and not waitOnFlip:
-            theseKeys = confirm_resp_2.getKeys(keyList=['space'], ignoreKeys=["escape"], waitRelease=False)
-            _confirm_resp_2_allKeys.extend(theseKeys)
-            if len(_confirm_resp_2_allKeys):
-                confirm_resp_2.keys = _confirm_resp_2_allKeys[-1].name  # just the last key pressed
-                confirm_resp_2.rt = _confirm_resp_2_allKeys[-1].rt
-                confirm_resp_2.duration = _confirm_resp_2_allKeys[-1].duration
-                # a response ends the routine
-                continueRoutine = False
-        
-        # check for quit (typically the Esc key)
-        if defaultKeyboard.getKeys(keyList=["escape"]):
-            thisExp.status = FINISHED
-        if thisExp.status == FINISHED or endExpNow:
-            endExperiment(thisExp, inputs=inputs, win=win)
-            return
-        
-        # check if all components have finished
-        if not continueRoutine:  # a component has requested a forced-end of Routine
-            routineForceEnded = True
-            break
-        continueRoutine = False  # will revert to True if at least one component still running
-        for thisComponent in slider_taskComponents:
-            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-                continueRoutine = True
-                break  # at least one component has not yet finished
-        
-        # refresh the screen
-        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-            win.flip()
-    
-    # --- Ending Routine "slider_task" ---
-    for thisComponent in slider_taskComponents:
-        if hasattr(thisComponent, "setAutoDraw"):
-            thisComponent.setAutoDraw(False)
-    thisExp.addData('slider_task.stopped', globalClock.getTime())
-    thisExp.addData('slider.response', slider.getRating())
-    thisExp.addData('slider.rt', slider.getRT())
-    # Run 'End Routine' code from code
-    slider.Response = slider.markerPos
-    # check responses
-    if confirm_resp_2.keys in ['', [], None]:  # No response was made
-        confirm_resp_2.keys = None
-    thisExp.addData('confirm_resp_2.keys',confirm_resp_2.keys)
-    if confirm_resp_2.keys != None:  # we had a response
-        thisExp.addData('confirm_resp_2.rt', confirm_resp_2.rt)
-        thisExp.addData('confirm_resp_2.duration', confirm_resp_2.duration)
-    thisExp.nextEntry()
-    # the Routine "slider_task" was not non-slip safe, so reset the non-slip timer
-    routineTimer.reset()
     
     # mark experiment as finished
     endExperiment(thisExp, win=win, inputs=inputs)
