@@ -1,8 +1,8 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2023.2.3),
-    on July 23, 2024, at 10:23
+    on July 22, 2024, at 09:03
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -322,49 +322,34 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         color=[1,1,1], colorSpace='rgb', opacity=None,
         flipHoriz=False, flipVert=False,
         texRes=128.0, interpolate=True, depth=0.0)
+    
+    text_Adown_Choice = visual.TextStim(win=win, name='text_Adown_Choice',
+        text="-2000",
+        font='Open Sans', #'Arial'
+        # 原本 pos(-150.6,-75.8)
+        pos=(-150.6, -69.8), height=35, wrapWidth=None, ori=0,
+        color='red', colorSpace='rgb', opacity=1,
+        languageStyle='LTR',
+        depth=-5.0)
+    
     choice_resp = keyboard.Keyboard()
+
+    choosen_rect = visual.Rect(
+        win=win, name='choosen_rect',
+        width=100, height=100,
+        ori=0.0, pos=(200, -200), anchor='center',
+        lineWidth=2.0,     colorSpace='rgb',  lineColor='red', fillColor=None,
+        opacity=None, depth=-5.0, interpolate=True)
+    
     confirm_text_2fac = visual.TextStim(win=win, name='confirm_text_2fac',
-        text='',
+        text='Press F/J to choose Left/Right Lottery',
         font='Open Sans',
         pos=(0, -200), height=30.0, wrapWidth=None, ori=0.0, 
         color='white', colorSpace='rgb', opacity=None, 
         languageStyle='LTR',
-        depth=-3.0);
+        depth=-3.0)
+    
     confirm_resp = keyboard.Keyboard()
-    choosen_rect = visual.Rect(
-        win=win, name='choosen_rect',
-        width=(100, 100)[0], height=(100, 100)[1],
-        ori=0.0, pos=(0, 0), anchor='center',
-        lineWidth=2.0,     colorSpace='rgb',  lineColor='red', fillColor=None,
-        opacity=None, depth=-5.0, interpolate=True)
-    _200 = visual.TextStim(win=win, name='_200',
-        text='(200,200)',
-        font='Open Sans',
-        units='pix', pos=(200, 200), height=10.0, wrapWidth=None, ori=0.0, 
-        color='white', colorSpace='rgb', opacity=None, 
-        languageStyle='LTR',
-        depth=-6.0);
-    _2000 = visual.TextStim(win=win, name='_2000',
-        text='(200,-200)',
-        font='Open Sans',
-        units='pix', pos=(200, -200), height=10.0, wrapWidth=None, ori=0.0, 
-        color='white', colorSpace='rgb', opacity=None, 
-        languageStyle='LTR',
-        depth=-7.0);
-    _200_3 = visual.TextStim(win=win, name='_200_3',
-        text='(-200,200)',
-        font='Open Sans',
-        units='pix', pos=(-200, 200), height=10.0, wrapWidth=None, ori=0.0, 
-        color='white', colorSpace='rgb', opacity=None, 
-        languageStyle='LTR',
-        depth=-8.0);
-    _200_4 = visual.TextStim(win=win, name='_200_4',
-        text='(-200,-200)',
-        font='Open Sans',
-        units='pix', pos=(-200, -200), height=10.0, wrapWidth=None, ori=0.0, 
-        color='white', colorSpace='rgb', opacity=None, 
-        languageStyle='LTR',
-        depth=-9.0);
     
     # --- Initialize components for Routine "Fixation" ---
     fix_stumili = visual.ShapeStim(
@@ -388,21 +373,20 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
     # --- Prepare to start Routine "choice_task" ---
     continueRoutine = True
     # update component parameters for each repeat
-    thisExp.addData('choice_task.started', globalClock.getTime())
     choice_resp.keys = []
     choice_resp.rt = []
     _choice_resp_allKeys = []
+    thisExp.addData('choice_task.started', globalClock.getTime())
     # Run 'Begin Routine' code from code_2
     event.clearEvents('keyboard')
-    KeyResponse = False
-    confirm_text = ""
-    #left_text_color = "white"
-    #right_text_color = "white"
+    ChoiceKeyResponded = False
+    chosen_text = ""
+    rect_pos = (100, 100)
     confirm_resp.keys = []
     confirm_resp.rt = []
     _confirm_resp_allKeys = []
     # keep track of which components have finished
-    choice_taskComponents = [Loss_image, choice_resp, confirm_text_2fac, confirm_resp, choosen_rect, _200, _2000, _200_3, _200_4]
+    choice_taskComponents = [Loss_image,text_Adown_Choice, choice_resp, choosen_rect, confirm_text_2fac, confirm_resp]
     for thisComponent in choice_taskComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -445,6 +429,26 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
             # update params
             pass
         
+        # *text_Adown_Choice* updates
+        
+        # if text_Adown_Choice is starting this frame...
+        if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            # keep track of start time/frame for later
+            text_Adown_Choice.frameNStart = frameN  # exact frame index
+            text_Adown_Choice.tStart = t  # local t and not account for scr refresh
+            text_Adown_Choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(text_Adown_Choice, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'text_Adown_Choice.started')
+            # update status
+            text_Adown_Choice.status = STARTED
+            text_Adown_Choice.setAutoDraw(True)
+        
+        # if text_Adown_Choice is active this frame...
+        if text_Adown_Choice.status == STARTED:
+            # update params
+            pass
+
         # *choice_resp* updates
         waitOnFlip = False
         
@@ -473,23 +477,21 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         # Run 'Each Frame' code from code_2
         keys = event.getKeys()
         
-        if len(keys):
-            KeyResponse = True
+        if 'f' in keys or 'j' in keys:
+            ChoiceKeyResponded = True
             if 'f' in keys:
-               confirm_text= "A"
-               left_text_color = "red"
-               right_text_color = "white"
+                chosen_text= "A"
+                rect_pos = (-270,170)
             elif 'j' in keys:
-                confirm_text= "B"
-                left_text_color = "white"
-                right_text_color = "red"
-        #        slider.rating = True
-        #        KeyResponse = True
+                chosen_text= "B"
+                rect_pos = (260,170)
+            conf_text = f"{chosen_text} Chosen \n Press Space to Confirm"
+
         
         # *confirm_text_2fac* updates
         
         # if confirm_text_2fac is starting this frame...
-        if confirm_text_2fac.status == NOT_STARTED and KeyResponse:
+        if confirm_text_2fac.status == NOT_STARTED and ChoiceKeyResponded:
             # keep track of start time/frame for later
             confirm_text_2fac.frameNStart = frameN  # exact frame index
             confirm_text_2fac.tStart = t  # local t and not account for scr refresh
@@ -504,40 +506,13 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         # if confirm_text_2fac is active this frame...
         if confirm_text_2fac.status == STARTED:
             # update params
-            confirm_text_2fac.setText("Fucking \n Press Space to Continue", log=False)
-        
-        # *confirm_resp* updates
-        waitOnFlip = False
-        
-        # if confirm_resp is starting this frame...
-        if confirm_resp.status == NOT_STARTED and tThisFlip >= KeyResponse-frameTolerance:
-            # keep track of start time/frame for later
-            confirm_resp.frameNStart = frameN  # exact frame index
-            confirm_resp.tStart = t  # local t and not account for scr refresh
-            confirm_resp.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(confirm_resp, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'confirm_resp.started')
-            # update status
-            confirm_resp.status = STARTED
-            # keyboard checking is just starting
-            waitOnFlip = True
-            win.callOnFlip(confirm_resp.clock.reset)  # t=0 on next screen flip
-            win.callOnFlip(confirm_resp.clearEvents, eventType='keyboard')  # clear events on next screen flip
-        if confirm_resp.status == STARTED and not waitOnFlip:
-            theseKeys = confirm_resp.getKeys(keyList=['space'], ignoreKeys=["escape"], waitRelease=False)
-            _confirm_resp_allKeys.extend(theseKeys)
-            if len(_confirm_resp_allKeys):
-                confirm_resp.keys = _confirm_resp_allKeys[-1].name  # just the last key pressed
-                confirm_resp.rt = _confirm_resp_allKeys[-1].rt
-                confirm_resp.duration = _confirm_resp_allKeys[-1].duration
-                # a response ends the routine
-                continueRoutine = False
+            confirm_text_2fac.setText(conf_text, log=False)
         
         # *choosen_rect* updates
-        
+        waitOnFlip = False
+
         # if choosen_rect is starting this frame...
-        if choosen_rect.status == NOT_STARTED and KeyResponse:
+        if choosen_rect.status == NOT_STARTED and ChoiceKeyResponded:
             # keep track of start time/frame for later
             choosen_rect.frameNStart = frameN  # exact frame index
             choosen_rect.tStart = t  # local t and not account for scr refresh
@@ -547,92 +522,43 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
             thisExp.timestampOnFlip(win, 'choosen_rect.started')
             # update status
             choosen_rect.status = STARTED
+            choosen_rect.pos = rect_pos
             choosen_rect.setAutoDraw(True)
         
         # if choosen_rect is active this frame...
         if choosen_rect.status == STARTED:
             # update params
-            pass
+            choosen_rect.pos = rect_pos
+            # pass
+
+        # *confirm_resp* updates
+        waitOnFlip = False
         
-        # *_200* updates
-        
-        # if _200 is starting this frame...
-        if _200.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            _200.frameNStart = frameN  # exact frame index
-            _200.tStart = t  # local t and not account for scr refresh
-            _200.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(_200, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, '_200.started')
-            # update status
-            _200.status = STARTED
-            _200.setAutoDraw(True)
-        
-        # if _200 is active this frame...
-        if _200.status == STARTED:
-            # update params
-            pass
-        
-        # *_2000* updates
-        
-        # if _2000 is starting this frame...
-        if _2000.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            _2000.frameNStart = frameN  # exact frame index
-            _2000.tStart = t  # local t and not account for scr refresh
-            _2000.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(_2000, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, '_2000.started')
-            # update status
-            _2000.status = STARTED
-            _2000.setAutoDraw(True)
-        
-        # if _2000 is active this frame...
-        if _2000.status == STARTED:
-            # update params
-            pass
-        
-        # *_200_3* updates
-        
-        # if _200_3 is starting this frame...
-        if _200_3.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            _200_3.frameNStart = frameN  # exact frame index
-            _200_3.tStart = t  # local t and not account for scr refresh
-            _200_3.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(_200_3, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, '_200_3.started')
-            # update status
-            _200_3.status = STARTED
-            _200_3.setAutoDraw(True)
-        
-        # if _200_3 is active this frame...
-        if _200_3.status == STARTED:
-            # update params
-            pass
-        
-        # *_200_4* updates
-        
-        # if _200_4 is starting this frame...
-        if _200_4.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            _200_4.frameNStart = frameN  # exact frame index
-            _200_4.tStart = t  # local t and not account for scr refresh
-            _200_4.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(_200_4, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, '_200_4.started')
-            # update status
-            _200_4.status = STARTED
-            _200_4.setAutoDraw(True)
-        
-        # if _200_4 is active this frame...
-        if _200_4.status == STARTED:
-            # update params
-            pass
+        # if confirm_resp is starting this frame...
+        if ChoiceKeyResponded:
+            if confirm_resp.status == NOT_STARTED and tThisFlip >= ChoiceKeyResponded-frameTolerance:
+                # keep track of start time/frame for later
+                confirm_resp.frameNStart = frameN  # exact frame index
+                confirm_resp.tStart = t  # local t and not account for scr refresh
+                confirm_resp.tStartRefresh = tThisFlipGlobal  # on global time
+                win.timeOnFlip(confirm_resp, 'tStartRefresh')  # time at next scr refresh
+                # add timestamp to datafile
+                thisExp.timestampOnFlip(win, 'confirm_resp.started')
+                # update status
+                confirm_resp.status = STARTED
+                # keyboard checking is just starting
+                waitOnFlip = True
+                win.callOnFlip(confirm_resp.clock.reset)  # t=0 on next screen flip
+                win.callOnFlip(confirm_resp.clearEvents, eventType='keyboard')  # clear events on next screen flip
+            if confirm_resp.status == STARTED and not waitOnFlip:
+                theseKeys = confirm_resp.getKeys(keyList=['space'], ignoreKeys=["escape"], waitRelease=False)
+                _confirm_resp_allKeys.extend(theseKeys)
+                if len(_confirm_resp_allKeys):
+                    confirm_resp.keys = _confirm_resp_allKeys[-1].name  # just the last key pressed
+                    confirm_resp.rt = _confirm_resp_allKeys[-1].rt
+                    confirm_resp.duration = _confirm_resp_allKeys[-1].duration
+                    # a response ends the routine
+                    continueRoutine = False
         
         # check for quit (typically the Esc key)
         if defaultKeyboard.getKeys(keyList=["escape"]):
@@ -666,15 +592,13 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
     thisExp.addData('choice_resp.keys',choice_resp.keys)
     if choice_resp.keys != None:  # we had a response
         thisExp.addData('choice_resp.rt', choice_resp.rt)
-        thisExp.addData('choice_resp.duration', choice_resp.duration)
-    thisExp.nextEntry()
-    # check responses
+        # thisExp.addData('choice_resp.duration', choice_resp.duration)
     if confirm_resp.keys in ['', [], None]:  # No response was made
         confirm_resp.keys = None
     thisExp.addData('confirm_resp.keys',confirm_resp.keys)
     if confirm_resp.keys != None:  # we had a response
         thisExp.addData('confirm_resp.rt', confirm_resp.rt)
-        thisExp.addData('confirm_resp.duration', confirm_resp.duration)
+        # thisExp.addData('confirm_resp.duration', confirm_resp.duration)
     thisExp.nextEntry()
     # the Routine "choice_task" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset()

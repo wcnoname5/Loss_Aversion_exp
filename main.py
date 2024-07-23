@@ -41,7 +41,7 @@ _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 # Store info about the experiment session
 psychopyVersion = '2023.1.3'
-expName = 'FRN_experiment'  # from the Builder filename that created this script
+expName = 'LossAver_experiment'  # from the Builder filename that created this script
 expInfo = {
     'participant': f"{np.random.randint(0, 999999):06.0f}",
 }
@@ -110,23 +110,97 @@ defaultKeyboard = keyboard.Keyboard(backend='iohub')
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
-
 Exp = Experiment(win, thisExp, routineTimer, defaultKeyboard, size = winsize)
 
 ## instruction
-Exp.instruction()
-
-fixation = {'name': 'fixation_1', 
-             'text': '+', 
+# Exp.instruction()
+# ---------------Text Stimuli-----------------
+fixation = {"name": "fixation_1", 
+             "text": "+", 
              "pos": (0,0), 
              "height": 48}
 
-Exp.text_only(text_config=fixation, duration=0.5)
-choice_jar = Exp.choice()
+End = {"name": "tmp_End", 
+             "text": "Thank You So Much.", 
+             "pos": (0,0), 
+             "height": 48}
+
+# ---------------Setup-----------------
+n_bisect = 10 
+G = 2000
+param = ["L", "x1pos", "x1neg"]
+stumuli_path = "./Stimuli" 
+param_est = {} #store estimations
+bounds = [np.array((-G*2, 0)),
+          np.array((0,G)),
+          np.array((-G,0))]
+
+def PEST():
+    pass
+
+def Bisection_only(n_bisect= n_bisect):
+    trial = 0 # trial counting 
+    for index, param_name in enumerate(param):
+        # add bisection number
+        filepath = f"{stumuli_path}/{param_name}.png"
+        Exp.choice_image.image = filepath
+
+        indiff_bound = bounds[index]
+
+        if param_name == "L":
+            Exp.text_Bmid_Choice.setText("", log=False)
+        elif param_name == "x1pos":
+            Exp.text_Adown_Choice.setText("", log=False)
+        elif param_name == "x1neg":
+            indiff_bound[0] = param_est['L']
+            Exp.text_Adown_Choice.setText(f"{param_est['L']}", log=False)
+        
+        for bisect in range(n_bisect):
+            trial += 1
+            Exp.thisExp.addData('Trial', trial)
+            Exp.thisExp.addData('Estimate', param_name)
+            # add bisection number
+            Exp.thisExp.addData('Task_Type', "Bisection")
+            Exp.thisExp.addData('Bisection_trial', bisect+1)
+
+            #trial setup
+            eval_quan = sum(indiff_bound)//2 # Bisection
+            if param_name == "L":
+                Exp.text_Adown_Choice.setText(f"{eval_quan}", log=False)
+            elif param_name == "x1pos":
+                Exp.text_Bmid_Choice.setText(f"{eval_quan}", log=False)
+                Exp.text_Bmid_Choice.setColor('blue', colorSpace='rgb')
+            elif param_name == "x1neg":
+                Exp.text_Bmid_Choice.setText(f"{eval_quan}", log=False)
+                Exp.text_Bmid_Choice.setColor('red', colorSpace='rgb')
+
+            # fixation + choice
+            Exp.text_only(text_config=fixation, duration=0.5)
+            prev_choice, prev_lott = Exp.choice(isMeasureL = (param_name == "L"))
+            
+            # Update 
+            if (prev_choice == "Right"):
+                if (param_name == "L"): # lower bound
+                    indiff_bound[0] = eval_quan 
+                else:
+                    indiff_bound[1] = eval_quan
+            elif (prev_choice == "Left"):
+                if (param_name == "L"):
+                    indiff_bound[1] = eval_quan
+                else:
+                    indiff_bound[0] = eval_quan
+
+
+            Exp.thisExp.addData('indiff_bound', indiff_bound)
+            # record next trial
+            Exp.thisExp.nextEntry()
+        param_est[param_name] = sum(indiff_bound)//2
+
+
+Bisection_only()
+Exp.text_only(text_config=End, duration=1)
 
 # for trial in range(520):
-#     # add Trial number
-#     Exp.thisExp.addData('trial', trial+1)
 
 #     ## fixation_1 0.5s
 #     Exp.text_only(text_config=fixation1, duration=0.5)

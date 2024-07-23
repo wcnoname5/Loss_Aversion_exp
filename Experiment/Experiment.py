@@ -17,7 +17,6 @@ class Experiment():
         self.routineTimer = routineTimer
         self.defaultKeyboard = defaultKeyboard
         self.size = size
-        
 
         # --- Initialize components for Routine "showText" ---
         self.textStim = visual.TextStim(win=win,
@@ -27,7 +26,7 @@ class Experiment():
             depth=0.0);
 
         # prepare stimuli for choice.py
-        self.img_est_L = visual.ImageStim(
+        self.choice_image = visual.ImageStim(
             win=self.win,
             name='img_choice',
             size = self.size,
@@ -37,16 +36,51 @@ class Experiment():
             flipHoriz=False, flipVert=False,
             texRes=128.0, interpolate=True, depth=0.0)
 
-        self.text_choice = visual.TextStim(win=self.win, name='text_choice',
-            text='請選擇',
-            font='Open Sans',
-            pos=(0, 480), height=32.0, wrapWidth=None, ori=0.0, 
-            color='black', colorSpace='rgb', opacity=None, 
+        # self.text_choice = visual.TextStim(win=self.win, name='text_choice',
+        #     text='請選擇',
+        #     font='Open Sans',
+        #     pos=(0, 480), height=32.0, wrapWidth=None, ori=0.0, 
+        #     color='black', colorSpace='rgb', opacity=None, 
+        #     languageStyle='LTR',
+        #     depth=-2.0)
+        
+        self.text_Adown_Choice = visual.TextStim(
+            win=self.win, name='text_Adown_Choice',
+            text="-2000",
+            font='Open Sans', #'Arial'
+            # 原本 pos(-150.6,-75.8)
+            pos=(-150.6, -69.8), height=35, wrapWidth=None, ori=0,
+            color='red', colorSpace='rgb', opacity=1,
             languageStyle='LTR',
-            depth=-2.0)
+            depth=-5.0)
+        
+        self.text_Bmid_Choice = visual.TextStim(
+            win=self.win, name='text_Amid_Choice',
+            text="",
+            font='Open Sans', #'Arial'
+            pos=(376.5, 3), height=35, wrapWidth=None, ori=0,
+            color='red', colorSpace='rgb', opacity=1,
+            languageStyle='LTR',
+            depth=-5.0)
         
         self.key_choice = keyboard.Keyboard()
 
+        self.choosen_rect = visual.Rect(
+            win=self.win, name='choosen_rect',
+            width=100, height=100,
+            ori=0.0, pos=(200, -200), anchor='center',
+            lineWidth=2.0, colorSpace='rgb', lineColor='red', fillColor=None,
+            opacity=None, depth=-5.0, interpolate=True)
+        
+        self.confirm_text_2fac = visual.TextStim(
+            win=self.win, name='confirm_text_2fac',
+            text='Press F/J to choose Left/Right Lottery',
+            font='Open Sans',
+            pos=(0, -200), height=36.0, wrapWidth=None, ori=0.0, 
+            color='black', colorSpace='rgb', opacity=None, 
+            languageStyle='LTR',
+            depth=-3.0)
+        
         self.confirm_resp = keyboard.Keyboard()
 
     def instruction(self):
@@ -62,48 +96,16 @@ class Experiment():
         self.textStim.height = text_config['height']
         text_only(self.textStim, duration, self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
 
-    def choice(self):
+    def choice(self, isMeasureL=True):
         # jar_random_pos = randchoice(['Stimuli/Int_1.png', 'Stimuli/Int_2.png'], size=1)
-        trial_choice = choice(self.win, self.thisExp, self.img_est_L,
-                              self.key_choice, self.text_choice, self.routineTimer, self.defaultKeyboard)
-        key_map_choice = {'f': 'Left', 'j': 'Right'}
-        
-        # if jar_random_pos == 'Stimuli/Int_1.png':
-        #     trial_choice = choice(self.win, self.thisExp, self.img_choice_red_on_right, self.key_choice, self.text_choice, 
-        #                           self.routineTimer, self.defaultKeyboard)
-        #     jar_img_map = {'f': 'blue_jar', 'j': 'red_jar'} # 1 for blue and 2 for red
-        # else:
-        #     trial_choice = choice(self.win, self.thisExp, self.img_choice_red_on_left, self.key_choice, self.text_choice, 
-        #                           self.routineTimer, self.defaultKeyboard)
-        #     jar_img_map = {'f': 'red_jar', 'j': 'blue_jar'} # 2 for blue and 1 for red
+        trial_choice = choice(self.win, self.thisExp, self.choice_image,
+                              self.text_Adown_Choice, self.text_Bmid_Choice, self.key_choice, self.choosen_rect,
+                              self.confirm_text_2fac, self.confirm_resp,
+                              self.routineTimer, self.defaultKeyboard, isMeasureL)
         try:
-            # trial_choice = 'f' or 'j'
-            choice_lott = key_map_choice[trial_choice] # get "red_jar" or "blue_jar"
-            self.thisExp.addData('choosen_lottery', choice_lott)
-            self.miss = False
-            return choice_lott
+            return trial_choice
         except:
-            self.miss = True
+            print("Miss")
+            # self.miss = True
             return None
         
-    # def jar_reminder(self, choice_jar):
-    #     if choice_jar == 'red_jar':
-    #         jar_reminder(self.img_redjar, self.text_jar_reminder, self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
-    #     else:
-    #         jar_reminder(self.img_bluejar, self.text_jar_reminder, self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
-
-    # def get_cue(self, no_trial):
-    #     # Choose the Cue 
-    #     subset = self.df[self.df.cond == self.cond_array[no_trial]] # all rows w/ condition == current trial
-    #     current_trial = subset.sample(n=1).iloc[0]
-    #     self.thisExp.addData('cond', current_trial['cond'])
-    #     self.thisExp.addData('cond_jar', current_trial['jar'])
-    #     cueslist = current_trial[['result_1', 'result_2', 'result_3']].tolist()
-    #     jar_mapping = {1: 'blue_jar', 2: 'red_jar'}
-    #     ans_jar = jar_mapping[current_trial['jar']] # get the color of the jar: 'blue_jar' or 'red_jar'
-    #     return cueslist, ans_jar
-
-    # def cues(self, choice_jar, cueslist):
-    #     print(cueslist)
-    #     img_key = ''.join(map(str, cueslist))
-    #     cues(choice_jar, self.cue_img_dict[img_key], self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)

@@ -1,5 +1,5 @@
     
-from psychopy import visual, core
+from psychopy import visual, core, event
 from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
 from psychopy.hardware import keyboard
@@ -7,9 +7,17 @@ from numpy.random import choice as randchoice
 # --- Initialize components for Routine "choice" ---
 
 
-
-def choice(win, thisExp, img_choice, key_choice, text_choice, routineTimer, defaultKeyboard):
-
+'''
+Notes:
+ `Loss_image` -> `img_choice`
+ 'choice_resp' -> `key_choice`
+ `text_Adown_Choice` -> `eval_indiff` (not changed yet)
+'''
+def choice(win, thisExp,
+            img_choice, text_Adown_Choice, text_Bmid_Choice,
+            key_choice, choosen_rect,
+            confirm_text_2fac, confirm_resp,
+            routineTimer, defaultKeyboard, isMeasureL =True):
     # --- Prepare stimulus for Routine "choice" --- 
     trial_choice = None
     # trigger_map = {'f': chr(1), 'j': chr(2)}
@@ -23,8 +31,17 @@ def choice(win, thisExp, img_choice, key_choice, text_choice, routineTimer, defa
     key_choice.keys = []
     key_choice.rt = []
     _key_choice_allKeys = []
+    # thisExp.addData('choice_task.started', globalClock.getTime())
+    # Run 'Begin Routine' code from code_2
+    event.clearEvents('keyboard') # not sure if needed 
+    ChoiceKeyResponded = False
+    chosen_text = ""
+    rect_pos = (0, 0)
+    confirm_resp.keys = []
+    confirm_resp.rt = []
+    _confirm_resp_allKeys = []
     # keep track of which components have finished
-    choiceComponents = [img_choice, key_choice, text_choice]
+    choiceComponents = [img_choice, text_Adown_Choice, text_Bmid_Choice , key_choice, choosen_rect, confirm_text_2fac, confirm_resp]
     for thisComponent in choiceComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -39,7 +56,7 @@ def choice(win, thisExp, img_choice, key_choice, text_choice, routineTimer, defa
 
     # --- Run Routine "choice" ---
     routineForceEnded = not continueRoutine
-    while continueRoutine and routineTimer.getTime() < 3.0:
+    while continueRoutine:
         # get current time
         t = routineTimer.getTime()
         tThisFlip = win.getFutureFlipTime(clock=routineTimer)
@@ -66,7 +83,7 @@ def choice(win, thisExp, img_choice, key_choice, text_choice, routineTimer, defa
         if img_choice.status == STARTED:
             # update params
             pass
-        
+        '''        
         # if img_choice is stopping this frame...
         if img_choice.status == STARTED:
             # is it time to stop? (based on global clock, using actual start)
@@ -79,6 +96,80 @@ def choice(win, thisExp, img_choice, key_choice, text_choice, routineTimer, defa
                 # update status
                 img_choice.status = FINISHED
                 img_choice.setAutoDraw(False)
+        '''
+
+        # *text_Adown_Choice/text_Bmid_Choice* updates
+
+        # if text_Adown_Choice is starting this frame...
+        if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            # keep track of start time/frame for later
+            text_Adown_Choice.frameNStart = frameN  # exact frame index
+            text_Adown_Choice.tStart = t  # local t and not account for scr refresh
+            text_Adown_Choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(text_Adown_Choice, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'text_Adown_Choice.started')
+            # update status
+            text_Adown_Choice.status = STARTED
+            text_Adown_Choice.setAutoDraw(True)
+        
+        # if text_Adown_Choice is active this frame...
+        if text_Adown_Choice.status == STARTED:
+            # update params
+            pass
+        # if text_Adown_Choice is starting this frame...
+        if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            # keep track of start time/frame for later
+            text_Adown_Choice.frameNStart = frameN  # exact frame index
+            text_Adown_Choice.tStart = t  # local t and not account for scr refresh
+            text_Adown_Choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(text_Adown_Choice, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'text_Adown_Choice.started')
+            # update status
+            text_Adown_Choice.status = STARTED
+            text_Adown_Choice.setAutoDraw(True)
+        
+        # if text_Adown_Choice is active this frame...
+        if text_Adown_Choice.status == STARTED:
+            # update params
+            pass
+
+        # text_Bmid_Choice
+        # if text_Bmid_Choice is starting this frame...
+        if text_Bmid_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            # keep track of start time/frame for later
+            text_Bmid_Choice.frameNStart = frameN  # exact frame index
+            text_Bmid_Choice.tStart = t  # local t and not account for scr refresh
+            text_Bmid_Choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(text_Bmid_Choice, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'text_Bmid_Choice.started')
+            # update status
+            text_Bmid_Choice.status = STARTED
+            text_Bmid_Choice.setAutoDraw(True)
+        
+        # if text_Bmid_Choice is active this frame...
+        if text_Bmid_Choice.status == STARTED:
+            # update params
+            pass
+        # if text_Bmid_Choice is starting this frame...
+        if text_Bmid_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            # keep track of start time/frame for later
+            text_Bmid_Choice.frameNStart = frameN  # exact frame index
+            text_Bmid_Choice.tStart = t  # local t and not account for scr refresh
+            text_Bmid_Choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(text_Bmid_Choice, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'text_Bmid_Choice.started')
+            # update status
+            text_Bmid_Choice.status = STARTED
+            text_Bmid_Choice.setAutoDraw(True)
+        
+        # if text_Bmid_Choice is active this frame...
+        if text_Bmid_Choice.status == STARTED:
+            # update params
+            pass
         
         # *key_choice* updates
         waitOnFlip = False
@@ -98,62 +189,120 @@ def choice(win, thisExp, img_choice, key_choice, text_choice, routineTimer, defa
             waitOnFlip = True
             win.callOnFlip(key_choice.clock.reset)  # t=0 on next screen flip
             win.callOnFlip(key_choice.clearEvents, eventType='keyboard')  # clear events on next screen flip
-        
-        # if key_choice is stopping this frame...
-        if key_choice.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > key_choice.tStartRefresh + 3-frameTolerance:
-                # keep track of stop time/frame for later
-                key_choice.tStop = t  # not accounting for scr refresh
-                key_choice.frameNStop = frameN  # exact frame index
-                # add timestamp to datafile
-                # thisExp.timestampOnFlip(win, 'key_choice.stopped')
-                # update status
-                key_choice.status = FINISHED
-                key_choice.status = FINISHED
         if key_choice.status == STARTED and not waitOnFlip:
-            theseKeys = key_choice.getKeys(keyList=['f','j'], waitRelease=False)
+            theseKeys = key_choice.getKeys(keyList=['f','j'], ignoreKeys=["escape"], waitRelease=False)
             _key_choice_allKeys.extend(theseKeys)
             if len(_key_choice_allKeys):
                 key_choice.keys = _key_choice_allKeys[-1].name  # just the last key pressed
-                trial_choice = key_choice.keys
                 key_choice.rt = _key_choice_allKeys[-1].rt
                 key_choice.duration = _key_choice_allKeys[-1].duration
-                # a response ends the routine
-                continueRoutine = False
+
+        # Run 'Each Frame' code from code_2
+        keys = event.getKeys()
         
-        # *text_choice* updates
+        if 'f' in keys or 'j' in keys:
+            ChoiceKeyResponded = True
+            if 'f' in keys:
+                chosen_text= "A"
+                rect_pos = (-270,170)
+            elif 'j' in keys:
+                chosen_text= "B"
+                rect_pos = (260,170)
+            conf_text = f"{chosen_text} Chosen \n Press Space to Confirm"
+    
+        # # if key_choice is stopping this frame...
+        # if key_choice.status == STARTED:
+        #     # is it time to stop? (based on global clock, using actual start)
+        #     if tThisFlipGlobal > key_choice.tStartRefresh + 3-frameTolerance:
+        #         # keep track of stop time/frame for later
+        #         key_choice.tStop = t  # not accounting for scr refresh
+        #         key_choice.frameNStop = frameN  # exact frame index
+        #         # add timestamp to datafile
+        #         # thisExp.timestampOnFlip(win, 'key_choice.stopped')
+        #         # update status
+        #         key_choice.status = FINISHED
+        #         key_choice.status = FINISHED
+        # if key_choice.status == STARTED and not waitOnFlip:
+        #     theseKeys = key_choice.getKeys(keyList=['f','j'], waitRelease=False)
+        #     _key_choice_allKeys.extend(theseKeys)
+        #     if len(_key_choice_allKeys):
+        #         key_choice.keys = _key_choice_allKeys[-1].name  # just the last key pressed
+        #         trial_choice = key_choice.keys
+        #         key_choice.rt = _key_choice_allKeys[-1].rt
+        #         key_choice.duration = _key_choice_allKeys[-1].duration
+        #         # a response ends the routine
+        #         continueRoutine = False
         
-        # if text_choice is starting this frame...
-        if text_choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+         # *confirm_text_2fac* updates
+        
+        # if confirm_text_2fac is starting this frame...
+        if confirm_text_2fac.status == NOT_STARTED and ChoiceKeyResponded:
             # keep track of start time/frame for later
-            text_choice.frameNStart = frameN  # exact frame index
-            text_choice.tStart = t  # local t and not account for scr refresh
-            text_choice.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(text_choice, 'tStartRefresh')  # time at next scr refresh
+            confirm_text_2fac.frameNStart = frameN  # exact frame index
+            confirm_text_2fac.tStart = t  # local t and not account for scr refresh
+            confirm_text_2fac.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(confirm_text_2fac, 'tStartRefresh')  # time at next scr refresh
             # add timestamp to datafile
-            # thisExp.timestampOnFlip(win, 'text_choice.started')
+            thisExp.timestampOnFlip(win, 'confirm_text_2fac.started')
             # update status
-            text_choice.status = STARTED
-            text_choice.setAutoDraw(True)
+            confirm_text_2fac.status = STARTED
+            confirm_text_2fac.setAutoDraw(True)
         
-        # if text_choice is active this frame...
-        if text_choice.status == STARTED:
+        # if confirm_text_2fac is active this frame...
+        if confirm_text_2fac.status == STARTED:
             # update params
-            pass
+            confirm_text_2fac.setText(conf_text, log=False)
         
-        # if text_choice is stopping this frame...
-        if text_choice.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > text_choice.tStartRefresh + 3-frameTolerance:
-                # keep track of stop time/frame for later
-                text_choice.tStop = t  # not accounting for scr refresh
-                text_choice.frameNStop = frameN  # exact frame index
+        # *choosen_rect* updates
+
+        # if choosen_rect is starting this frame...
+        if choosen_rect.status == NOT_STARTED and ChoiceKeyResponded:
+            # keep track of start time/frame for later
+            choosen_rect.frameNStart = frameN  # exact frame index
+            choosen_rect.tStart = t  # local t and not account for scr refresh
+            choosen_rect.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(choosen_rect, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'choosen_rect.started')
+            # update status
+            choosen_rect.status = STARTED
+            choosen_rect.pos = rect_pos
+            choosen_rect.setAutoDraw(True)
+        
+        # if choosen_rect is active this frame...
+        if choosen_rect.status == STARTED:
+            # update params
+            choosen_rect.pos = rect_pos
+            # pass
+
+        # *confirm_resp* updates
+        waitOnFlip = False
+        
+        # if confirm_resp is starting this frame...
+        if ChoiceKeyResponded:
+            if confirm_resp.status == NOT_STARTED and tThisFlip >= ChoiceKeyResponded-frameTolerance:
+                # keep track of start time/frame for later
+                confirm_resp.frameNStart = frameN  # exact frame index
+                confirm_resp.tStart = t  # local t and not account for scr refresh
+                confirm_resp.tStartRefresh = tThisFlipGlobal  # on global time
+                win.timeOnFlip(confirm_resp, 'tStartRefresh')  # time at next scr refresh
                 # add timestamp to datafile
-                # thisExp.timestampOnFlip(win, 'text_choice.stopped')
+                thisExp.timestampOnFlip(win, 'confirm_resp.started')
                 # update status
-                text_choice.status = FINISHED
-                text_choice.setAutoDraw(False)
+                confirm_resp.status = STARTED
+                # keyboard checking is just starting
+                waitOnFlip = True
+                win.callOnFlip(confirm_resp.clock.reset)  # t=0 on next screen flip
+                win.callOnFlip(confirm_resp.clearEvents, eventType='keyboard')  # clear events on next screen flip
+            if confirm_resp.status == STARTED and not waitOnFlip:
+                theseKeys = confirm_resp.getKeys(keyList=['space'], ignoreKeys=["escape"], waitRelease=False)
+                _confirm_resp_allKeys.extend(theseKeys)
+                if len(_confirm_resp_allKeys):
+                    confirm_resp.keys = _confirm_resp_allKeys[-1].name  # just the last key pressed
+                    confirm_resp.rt = _confirm_resp_allKeys[-1].rt
+                    confirm_resp.duration = _confirm_resp_allKeys[-1].duration
+                    # a response ends the routine
+                    continueRoutine = False
         
         # check for quit (typically the Esc key)
         if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
@@ -181,13 +330,22 @@ def choice(win, thisExp, img_choice, key_choice, text_choice, routineTimer, defa
             thisComponent.setAutoDraw(False)
             stoptime = win.getFutureFlipTime(clock=None)
             thisComponent.tStopRefresh = stoptime
+    
+
+
     # check responses
+    key_map_choice = {'f': 'Left', 'j': 'Right'}
     if key_choice.keys in ['', [], None]:  # No response was made
         key_choice.keys = None
     thisExp.addData('key_choice.keys',key_choice.keys)
     if key_choice.keys != None:  # we had a response
         thisExp.addData('key_choice.rt', key_choice.rt)
         # thisExp.addData('key_choice.duration', key_choice.duration)
+    if confirm_resp.keys in ['', [], None]:  # No response was made
+        confirm_resp.keys = None
+    # thisExp.addData('confirm_resp.keys',confirm_resp.keys)
+    if confirm_resp.keys != None:  # we had a response
+        thisExp.addData('confirm_resp.rt', confirm_resp.rt)
     thisExp.addData('choice.start', img_choice.tStartRefresh)
     thisExp.addData('choice.stop', img_choice.tStopRefresh)
     # thisExp.nextEntry()
@@ -197,4 +355,12 @@ def choice(win, thisExp, img_choice, key_choice, text_choice, routineTimer, defa
     else:
         routineTimer.addTime(-3.000000)
 
-    return trial_choice
+    trial_choice = key_map_choice[key_choice.keys]
+    if isMeasureL:
+        lott_value = int(text_Adown_Choice.text)
+    else: 
+        lott_value = int(text_Bmid_Choice.text)
+    thisExp.addData('chosen_lottery',trial_choice)
+    thisExp.addData('lottery_value', lott_value)
+
+    return(trial_choice, lott_value)
