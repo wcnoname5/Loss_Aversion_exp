@@ -17,7 +17,7 @@ def choice(win, thisExp,
             img_choice, text_Adown_Choice, text_Bmid_Choice,
             key_choice, choosen_rect,
             confirm_text_2fac, confirm_resp,
-            routineTimer, defaultKeyboard, isMeasureL =True):
+            routineTimer, defaultKeyboard):
     # --- Prepare stimulus for Routine "choice" --- 
     trial_choice = None
     # trigger_map = {'f': chr(1), 'j': chr(2)}
@@ -356,11 +356,6 @@ def choice(win, thisExp,
         routineTimer.addTime(-3.000000)
 
     trial_choice = key_map_choice[key_choice.keys]
-    if isMeasureL:
-        lott_value = int(text_Adown_Choice.text)
-    else: 
-        lott_value = int(text_Bmid_Choice.text)
     thisExp.addData('chosen_lottery',trial_choice)
-    thisExp.addData('lottery_value', lott_value)
 
-    return(trial_choice, lott_value)
+    return(trial_choice)

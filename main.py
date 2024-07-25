@@ -134,19 +134,122 @@ param_est = {} #store estimations
 bounds = [np.array((-G*2, 0)),
           np.array((0,G)),
           np.array((-G,0))]
+minimal_step = 5 # stop crition 
+# step_size = 512
 
-def PEST():
-    pass
+def get_color(value): # *int -> str
+    color_map = {True: "blue", False: "red"}
+    return color_map[value>=0]
 
-def Bisection_only(n_bisect= n_bisect):
+def PEST_only(param, stumuli_path, bounds, minimal_step):
     trial = 0 # trial counting 
+    def init_step_size(bound): 
+        # Ensure n is greater than 1
+        n = bound[1] - bound[0]
+        power = 1
+        while power * 2 < n/10:
+            power *= 2
+        step = power*10
+        return step
+    
     for index, param_name in enumerate(param):
-        # add bisection number
+        # Stimuli Setup
+        indiff_bound = bounds[index]
         filepath = f"{stumuli_path}/{param_name}.png"
         Exp.choice_image.image = filepath
+        if param_name == "L":
+            Exp.text_Bmid_Choice.setText("", log=False)
+        elif param_name == "x1pos":
+            Exp.text_Adown_Choice.setText("", log=False)
+        elif param_name == "x1neg":
+            indiff_bound[0] = param_est['L']
+            Exp.text_Adown_Choice.setText(f"{param_est['L']}", log=False)
+        
+        # PEST settings
+        PEST_trial = 0
+        strat_point = sum(indiff_bound)//2 # Midpoint as starting point
+        step = init_step_size(indiff_bound) # step_size
+        print(f"Bound:{indiff_bound}; Inital Setp Size: {step}" )
+        last_choices = [None]*4 # index 0 has nearest history
+        extra_step = False
 
+        # PEST iteration
+        while step > minimal_step:
+            trial += 1
+            PEST_trial += 1
+
+            # PEST update
+            if PEST_trial==1:
+                eval_quan = strat_point
+            else:
+                ## Calculating steps
+                if PEST_trial <4:
+                    if (last_choices[0] != last_choices[1]) : # Reversal
+                        step = step//2
+                    elif (PEST_trial == 3) & (last_choices[1] == last_choices[2]):
+                        step = step*2 # double
+                    else: pass
+                else:
+                    # Reversal:half the step size
+                    if (last_choices[0] != last_choices[1]):
+                        step = step//2
+                        ## Reversal after Doubled: extra step
+                        if (last_choices[1] == last_choices[2] == last_choices[3]):
+                            extra_step = True 
+                    # Same direction for 3 streak: Double
+                    elif (last_choices[0] == last_choices[1] == last_choices[2]):
+                        if extra_step:
+                            extra_step = False
+                        else:
+                            step = step * 2
+
+                direction = int(last_choices[0]=="Left")*2 - 1 # T:1, F:-1
+                if (param_name == "L"):
+                    direction = -direction
+                else: pass
+                # Update Lottery parir value
+                eval_quan = eval_quan + (direction * step)
+
+            # Record Trial Information
+            Exp.thisExp.addData('Trial', trial)
+            Exp.thisExp.addData('Task_Type', "PEST")
+            Exp.thisExp.addData('Estimate', param_name)
+            Exp.thisExp.addData('Iteration', PEST_trial)
+            Exp.thisExp.addData('Step_Size', step)                    
+            Exp.thisExp.addData('Lottery_value', eval_quan) # updated lottery value in this trial
+            
+            # Choice Pair Update
+            if param_name == "L":
+                Exp.text_Adown_Choice.setText(f"{int(eval_quan)}", log=False)
+                Exp.text_Adown_Choice.setColor(get_color(eval_quan), colorSpace='rgb')
+            elif param_name == "x1pos":
+                Exp.text_Bmid_Choice.setText(f"{int(eval_quan)}", log=False)
+                Exp.text_Bmid_Choice.setColor(get_color(eval_quan), colorSpace='rgb')
+            elif param_name == "x1neg":
+                Exp.text_Bmid_Choice.setText(f"{int(eval_quan)}", log=False)
+                Exp.text_Bmid_Choice.setColor(get_color(eval_quan), colorSpace='rgb')
+
+            # fixation + choice
+            Exp.text_only(text_config=fixation, duration=0.5)
+            prev_choice = Exp.choice()
+
+            # Update choice history
+            last_choices.insert(0, prev_choice)
+            last_choices.pop()
+
+            # Exp.thisExp.addData('indiff_bound', indiff_bound)
+            # record next trial
+            Exp.thisExp.nextEntry()
+
+        param_est[param_name] = eval_quan
+
+def Bisection_only(n_bisect, param, stumuli_path, bounds):
+    trial = 0 # trial counting 
+    for index, param_name in enumerate(param):
+        # Stimuli Setup 
         indiff_bound = bounds[index]
-
+        filepath = f"{stumuli_path}/{param_name}.png"
+        Exp.choice_image.image = filepath
         if param_name == "L":
             Exp.text_Bmid_Choice.setText("", log=False)
         elif param_name == "x1pos":
@@ -157,47 +260,49 @@ def Bisection_only(n_bisect= n_bisect):
         
         for bisect in range(n_bisect):
             trial += 1
-            Exp.thisExp.addData('Trial', trial)
-            Exp.thisExp.addData('Estimate', param_name)
-            # add bisection number
-            Exp.thisExp.addData('Task_Type', "Bisection")
-            Exp.thisExp.addData('Bisection_trial', bisect+1)
-
-            #trial setup
             eval_quan = sum(indiff_bound)//2 # Bisection
-            if param_name == "L":
-                Exp.text_Adown_Choice.setText(f"{eval_quan}", log=False)
-            elif param_name == "x1pos":
-                Exp.text_Bmid_Choice.setText(f"{eval_quan}", log=False)
-                Exp.text_Bmid_Choice.setColor('blue', colorSpace='rgb')
-            elif param_name == "x1neg":
-                Exp.text_Bmid_Choice.setText(f"{eval_quan}", log=False)
-                Exp.text_Bmid_Choice.setColor('red', colorSpace='rgb')
+            # Record Trial Information
+            Exp.thisExp.addData('Trial', trial)
+            Exp.thisExp.addData('Task_Type', "Bisection")
+            Exp.thisExp.addData('Estimate', param_name)
+            Exp.thisExp.addData('Iteration', bisect+1)
+            Exp.thisExp.addData('Lottery_value', eval_quan) # updated lottery value in this trial
 
-            # fixation + choice
+            # Choice Pair Update
+            if param_name == "L":
+                Exp.text_Adown_Choice.setText(f"{int(eval_quan)}", log=False)
+                Exp.text_Adown_Choice.setColor(get_color(eval_quan), colorSpace='rgb')
+            elif param_name == "x1pos":
+                Exp.text_Bmid_Choice.setText(f"{int(eval_quan)}", log=False)
+                Exp.text_Bmid_Choice.setColor(get_color(eval_quan), colorSpace='rgb')
+            elif param_name == "x1neg":
+                Exp.text_Bmid_Choice.setText(f"{int(eval_quan)}", log=False)
+                Exp.text_Bmid_Choice.setColor(get_color(eval_quan), colorSpace='rgb')
+
+            # Show Fixation + choice
             Exp.text_only(text_config=fixation, duration=0.5)
-            prev_choice, prev_lott = Exp.choice(isMeasureL = (param_name == "L"))
-            
-            # Update 
-            if (prev_choice == "Right"):
-                if (param_name == "L"): # lower bound
+            prev_choice = Exp.choice()
+
+            # Update bound
+            if (param_name == "L"):
+                if (prev_choice == "Right"): # lower bound
                     indiff_bound[0] = eval_quan 
-                else:
+                else: # choose "Left"
                     indiff_bound[1] = eval_quan
-            elif (prev_choice == "Left"):
-                if (param_name == "L"):
+            else:
+                if (prev_choice == "Right"):
                     indiff_bound[1] = eval_quan
                 else:
                     indiff_bound[0] = eval_quan
-
 
             Exp.thisExp.addData('indiff_bound', indiff_bound)
             # record next trial
             Exp.thisExp.nextEntry()
         param_est[param_name] = sum(indiff_bound)//2
 
-
-Bisection_only()
+Exp.PEST_only(param, stumuli_path, bounds, minimal_step)
+Exp.Bisection_only(n_bisect, param, stumuli_path, bounds)
+# Bisection_only()
 Exp.text_only(text_config=End, duration=1)
 
 # for trial in range(520):
