@@ -4,20 +4,13 @@ from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
 from psychopy.hardware import keyboard
 from numpy.random import choice as randchoice
-# --- Initialize components for Routine "choice" ---
 
 
-'''
-Notes:
- `Loss_image` -> `img_choice`
- 'choice_resp' -> `key_choice`
- `text_Adown_Choice` -> `eval_indiff` (not changed yet)
-'''
 def choice(win, thisExp,
-            img_choice, text_Adown_Choice, text_Bmid_Choice,
+            img_choice, choice_instruct, text_Adown_Choice, text_Bmid_Choice,
             key_choice, choosen_rect,
             confirm_text_2fac, confirm_resp,
-            routineTimer, defaultKeyboard):
+            routineTimer, defaultKeyboard) -> str:
     # --- Prepare stimulus for Routine "choice" --- 
     trial_choice = None
     # trigger_map = {'f': chr(1), 'j': chr(2)}
@@ -41,7 +34,7 @@ def choice(win, thisExp,
     confirm_resp.rt = []
     _confirm_resp_allKeys = []
     # keep track of which components have finished
-    choiceComponents = [img_choice, text_Adown_Choice, text_Bmid_Choice , key_choice, choosen_rect, confirm_text_2fac, confirm_resp]
+    choiceComponents = [img_choice, choice_instruct, text_Adown_Choice, text_Bmid_Choice , key_choice, choosen_rect, confirm_text_2fac, confirm_resp]
     for thisComponent in choiceComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -98,25 +91,26 @@ def choice(win, thisExp,
                 img_choice.setAutoDraw(False)
         '''
 
-        # *text_Adown_Choice/text_Bmid_Choice* updates
+        # *choice_instruct/text_Adown_Choice/text_Bmid_Choice* updates
 
-        # if text_Adown_Choice is starting this frame...
-        if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+        # if choice_instruct is starting this frame...
+        if choice_instruct.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
             # keep track of start time/frame for later
-            text_Adown_Choice.frameNStart = frameN  # exact frame index
-            text_Adown_Choice.tStart = t  # local t and not account for scr refresh
-            text_Adown_Choice.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(text_Adown_Choice, 'tStartRefresh')  # time at next scr refresh
+            choice_instruct.frameNStart = frameN  # exact frame index
+            choice_instruct.tStart = t  # local t and not account for scr refresh
+            choice_instruct.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(choice_instruct, 'tStartRefresh')  # time at next scr refresh
             # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'text_Adown_Choice.started')
+            thisExp.timestampOnFlip(win, 'choice_instruct.started')
             # update status
-            text_Adown_Choice.status = STARTED
-            text_Adown_Choice.setAutoDraw(True)
+            choice_instruct.status = STARTED
+            choice_instruct.setAutoDraw(True)
         
-        # if text_Adown_Choice is active this frame...
-        if text_Adown_Choice.status == STARTED:
+        # if choice_instruct is active this frame...
+        if choice_instruct.status == STARTED:
             # update params
             pass
+
         # if text_Adown_Choice is starting this frame...
         if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
             # keep track of start time/frame for later
@@ -136,23 +130,6 @@ def choice(win, thisExp,
             pass
 
         # text_Bmid_Choice
-        # if text_Bmid_Choice is starting this frame...
-        if text_Bmid_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            text_Bmid_Choice.frameNStart = frameN  # exact frame index
-            text_Bmid_Choice.tStart = t  # local t and not account for scr refresh
-            text_Bmid_Choice.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(text_Bmid_Choice, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'text_Bmid_Choice.started')
-            # update status
-            text_Bmid_Choice.status = STARTED
-            text_Bmid_Choice.setAutoDraw(True)
-        
-        # if text_Bmid_Choice is active this frame...
-        if text_Bmid_Choice.status == STARTED:
-            # update params
-            pass
         # if text_Bmid_Choice is starting this frame...
         if text_Bmid_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
             # keep track of start time/frame for later

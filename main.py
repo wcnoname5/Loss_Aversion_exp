@@ -132,9 +132,10 @@ End = {"name": "tmp_End",
              "height": 48}
 
 # ---------------Setup-----------------
-n_bisect = 10 # 
+n_bisect = 10 # 10
 G = 2000
-params = ["L", "x1pos", "x1neg"]
+params = ["L", "x1pos", "x1neg"] 
+# params = ["L","x1neg"] # for testing
 stumuli_path = "./Stimuli" 
 # Initial parameter bounds 
 bounds = {
@@ -142,21 +143,22 @@ bounds = {
     "x1pos": np.array((0,G)),
     "x1neg": np.array((-G,0))
 }  
-minimal_step = 5 # stop crition 
+minimal_step = 5 # stop criterion, 5
 trial = 0
 
-## Main
+
+## Experiment start
+
 for param in params:
     bound = bounds[param]
     bisect_bound = bounds[param].copy()
     PEST_trial = 0
     bisect_trial = 0
     PEST_params = {"eval_quan":int(0),
-                   "step": int(0),
-                   "last_choices": [None]*4,
-                   "extra_step":False}
+                "step": int(0),
+                "last_choices": [None]*4,
+                "extra_step":False}
     PESTconv = False
-    # PESTconv = True
     converge = False
     Exp.text_only(text_config=Hold, duration=0.5)
     while not converge:
@@ -173,13 +175,15 @@ for param in params:
         else:
             bisect_trial += 1
             bisect_bound = Exp.BisectionTrial(trial, bisect_trial, param, bisect_bound, n_bisect)
-            # Exp.SliderTrial(trial, bisect_trial, param, bisect_bound)
+        # Slider Trial
+        if (bisect_trial in [3, 7]) and (PEST_trial == bisect_trial): 
+            trial += 1
+            Exp.text_only(text_config=fixation, duration=0.5)
+            Exp.SliderTrial(trial, bisect_trial, param, bisect_bound)
         
         converge = PESTconv & (bisect_trial >= n_bisect)
-    #     trial += 1
-    #     bisect_trial += 1
-    #     bound = Exp.BisectionTrial(trial, bisect_trial, param, bound)
-for method in ["Bisection", "PEST"]:
+
+for method in ["Bisection", "PEST", "Slider"]:
     Exp.RecordFinalEst(method)
 Exp.text_only(text_config=End, duration=1)
 

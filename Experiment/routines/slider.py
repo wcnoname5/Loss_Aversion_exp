@@ -4,42 +4,35 @@ from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
 from psychopy.hardware import keyboard
 from numpy.random import choice as randchoice
-# --- Initialize components for Routine "choice" ---
 
 
-'''
-Notes:
- `Loss_image` -> `img_choice`
- 'choice_resp' -> `key_choice`
- `text_Adown_Choice` -> `eval_indiff` (not changed yet)
-'''
-def slider_task(win, thisExp,
-            img_choice, slider, text_Adown_Choice, text_Bmid_Choice,
+def slider_task(win, thisExp, param,
+            img_choice, choice_instruct, slider,
+            text_Adown_Choice, text_Bmid_Choice,
             confirm_text, confirm_resp,
-            routineTimer, defaultKeyboard):
-    # --- Prepare stimulus for Routine "choice" --- 
-    trial_choice = None
-    # trigger_map = {'f': chr(1), 'j': chr(2)}
+            routineTimer, defaultKeyboard) -> int:
+    # --- Prepare stimulus for Routine "slider" --- 
 
     frameTolerance = 0.001
     endExpNow = False
-    # --- Prepare to start Routine "choice" ---
+    # --- Prepare to start Routine "slider" ---
     continueRoutine = True
-    # sendTrigger = False
-    # update component parameters for each repeat
-    # thisExp.addData('choice_task.started', globalClock.getTime())
+
     # Run 'Begin Routine' code from code_2
     slider.reset()
-    event.clearEvents('keyboard') # not sure if needed 
-    key_move = False
-    # ChoiceKeyResponded = False
-    # chosen_text = ""
-    # rect_pos = (0, 0)
+    slider.Response = False
+    # event.clearEvents('keyboard') # not sure if needed 
     confirm_resp.keys = []
     confirm_resp.rt = []
     _confirm_resp_allKeys = []
+    def get_color(value: int) -> str:
+        if value == 0:
+            return "black"
+        else:
+            color_map = {True: "blue", False: "red"}
+            return color_map[value>=0]
     # keep track of which components have finished
-    choiceComponents = [img_choice, slider, text_Adown_Choice, text_Bmid_Choice, confirm_text, confirm_resp]
+    choiceComponents = [img_choice, choice_instruct, slider, text_Adown_Choice, text_Bmid_Choice, confirm_text, confirm_resp]
     for thisComponent in choiceComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -96,7 +89,25 @@ def slider_task(win, thisExp,
                 img_choice.setAutoDraw(False)
         '''
 
-        # *text_Adown_Choice/text_Bmid_Choice* updates
+        # *choice_instruct/text_Adown_Choice/text_Bmid_Choice* updates
+        
+        # if choice_instruct is starting this frame...
+        if choice_instruct.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            # keep track of start time/frame for later
+            choice_instruct.frameNStart = frameN  # exact frame index
+            choice_instruct.tStart = t  # local t and not account for scr refresh
+            choice_instruct.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(choice_instruct, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'choice_instruct.started')
+            # update status
+            choice_instruct.status = STARTED
+            choice_instruct.setAutoDraw(True)
+        
+        # if choice_instruct is active this frame...
+        if choice_instruct.status == STARTED:
+            # update params
+            pass
 
         # if text_Adown_Choice is starting this frame...
         if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
@@ -114,23 +125,10 @@ def slider_task(win, thisExp,
         # if text_Adown_Choice is active this frame...
         if text_Adown_Choice.status == STARTED:
             # update params
-            pass
-        # if text_Adown_Choice is starting this frame...
-        if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            text_Adown_Choice.frameNStart = frameN  # exact frame index
-            text_Adown_Choice.tStart = t  # local t and not account for scr refresh
-            text_Adown_Choice.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(text_Adown_Choice, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'text_Adown_Choice.started')
-            # update status
-            text_Adown_Choice.status = STARTED
-            text_Adown_Choice.setAutoDraw(True)
-        
-        # if text_Adown_Choice is active this frame...
-        if text_Adown_Choice.status == STARTED:
-            # update params
+            if param == "L" and slider.Response:
+                update_value = int(slider.markerPos)
+                text_Adown_Choice.setText(update_value, log=False)
+                text_Adown_Choice.setColor(get_color(update_value), log=False)
             pass
 
         # text_Bmid_Choice
@@ -150,27 +148,13 @@ def slider_task(win, thisExp,
         # if text_Bmid_Choice is active this frame...
         if text_Bmid_Choice.status == STARTED:
             # update params
-            pass
-        # if text_Bmid_Choice is starting this frame...
-        if text_Bmid_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
-            # keep track of start time/frame for later
-            text_Bmid_Choice.frameNStart = frameN  # exact frame index
-            text_Bmid_Choice.tStart = t  # local t and not account for scr refresh
-            text_Bmid_Choice.tStartRefresh = tThisFlipGlobal  # on global time
-            win.timeOnFlip(text_Bmid_Choice, 'tStartRefresh')  # time at next scr refresh
-            # add timestamp to datafile
-            thisExp.timestampOnFlip(win, 'text_Bmid_Choice.started')
-            # update status
-            text_Bmid_Choice.status = STARTED
-            text_Bmid_Choice.setAutoDraw(True)
-        
-        # if text_Bmid_Choice is active this frame...
-        if text_Bmid_Choice.status == STARTED:
-            # update params
+            if (param != "L") and slider.Response:
+                update_value = int(slider.markerPos)
+                text_Bmid_Choice.setText(update_value, log=False)
+                text_Bmid_Choice.setColor(get_color(update_value), log=False)
             pass
         
         # *slider* updates
-        
         # if slider is starting this frame...
         if slider.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
             # keep track of start time/frame for later
@@ -188,24 +172,36 @@ def slider_task(win, thisExp,
         if slider.status == STARTED:
             # update params
             pass
-        # Run 'Each Frame' code from code
-        keys = event.getKeys()
-        
+
+        # Slider Key variables
+        # which keys are we watching? (these will differ depending on handedness)
+        keysWatched=['f', 'j']
+        # keysWatched=['left', 'right', 'return']
+        # what are the assumed key statuses at the start of the routine
+        status =['up', 'up']        
+        mykb = keyboard.Keyboard()
+        keys = mykb.getKeys(keysWatched)
+        # keys = mykb.getKeys(keysWatched, waitRelease = False, clear=True)
+        # how many keyPresses have been counted so far
+        # keyCount = 0 
+        # statusList = []
+
         if len(keys):
-            key_move = True
-            if 'f' in keys:
-                slider.markerPos = slider.markerPos - 1
-                key_move = True
-            elif 'j' in keys:
-                slider.markerPos = slider.markerPos  + 1
-                key_move = True
-            slider.Response = slider.markerPos
+            # print(f"{slider.labels} ")
+            if (not slider.Response) and (any(key.name in ['f', 'j'] for key in keys)):
+                slider.Response = True
+                slider.markerPos = (slider.ticks[1] + slider.ticks[-1]) // 2
+                slider.rating = slider.markerPos
+            elif any(key.name == 'f' for key in keys):
+                slider.markerPos = max(slider.ticks[0], slider.markerPos - 5)
+            elif any(key.name == 'j' for key in keys):
+                slider.markerPos = min(slider.ticks[-1], slider.markerPos + 5)
             slider.rating = slider.markerPos
-        
+            
         # *confirm_text* updates
         
         # if confirm_text is starting this frame...
-        if confirm_text.status == NOT_STARTED and key_move:
+        if confirm_text.status == NOT_STARTED and slider.Response:
             # keep track of start time/frame for later
             confirm_text.frameNStart = frameN  # exact frame index
             confirm_text.tStart = t  # local t and not account for scr refresh
@@ -218,15 +214,15 @@ def slider_task(win, thisExp,
             confirm_text.setAutoDraw(True)
         
         # if confirm_text is active this frame...
-        if confirm_text.status == STARTED:
+        if confirm_text.status == STARTED and slider.Response:
             # update params
-            confirm_text.setText(slider.markerPos, log=False)
+            confirm_text.setText(f"{int(slider.markerPos)}\n Press Space to Confirm", log=False)
         
         # *confirm_resp* updates
         waitOnFlip = False
         
         # if confirm_resp is starting this frame...
-        if confirm_resp.status == NOT_STARTED and key_move:
+        if confirm_resp.status == NOT_STARTED and slider.Response:
             # keep track of start time/frame for later
             confirm_resp.frameNStart = frameN  # exact frame index
             confirm_resp.tStart = t  # local t and not account for scr refresh
@@ -286,12 +282,12 @@ def slider_task(win, thisExp,
         thisExp.addData('confirm_resp.rt', confirm_resp.rt)
     thisExp.addData('slider.start', img_choice.tStartRefresh)
     thisExp.addData('slider.stop', img_choice.tStopRefresh)
-    thisExp.addData('slider.response', indiff)
+    thisExp.addData('slider.indiff_response', indiff)
+    thisExp.addData('Lottery_value', indiff)
 
     # using non-slip timing so subtract the expected duration of this Routine (unless ended on request)
     if routineForceEnded:
         routineTimer.reset()
     else:
         routineTimer.addTime(-3.000000)
-
-    # return indiff
+    return indiff

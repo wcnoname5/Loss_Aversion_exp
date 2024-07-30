@@ -56,10 +56,10 @@ class Experiment():
 
         # --- Initialize components for Routine "slider" ---
         self.slider = visual.Slider(win=win, name='slider',
-            startValue=None, size=(540, 40), pos=(0, -200), units=win.units,
-            labels=["0", "100"], ticks=None, granularity=1.0,
+            size=(540, 40), pos=(0, -180), units=win.units,
+            ticks=None, granularity=5,
             style='scrollbar', styleTweaks=(), opacity=None,
-            labelColor='LightGray', markerColor='Red', lineColor='White', colorSpace='rgb',
+            labelColor='LightGray', markerColor='Grey', lineColor='White', colorSpace='rgb',
             font='Open Sans', labelHeight=50.0,
             flip=False, ori=0.0, depth=-2, readOnly=False)
         
@@ -85,18 +85,18 @@ class Experiment():
             win=self.win, name='confirm_text',
             text='',
             font='Open Sans',
-            pos=(0, -200), height=36.0, wrapWidth=None, ori=0.0, 
+            pos=(0, -250), height=36.0, wrapWidth=None, ori=0.0, 
             color='black', colorSpace='rgb', opacity=None, 
             languageStyle='LTR',
             depth=-3.0)
         self.confirm_resp = keyboard.Keyboard()
-        # self.text_choice = visual.TextStim(win=self.win, name='text_choice',
-        #     text='請選擇',
-        #     font='Open Sans',
-        #     pos=(0, 480), height=32.0, wrapWidth=None, ori=0.0, 
-        #     color='black', colorSpace='rgb', opacity=None, 
-        #     languageStyle='LTR',
-        #     depth=-2.0)
+        self.choice_instruct = visual.TextStim(win=self.win, name='choice_instruct',
+            text='Press F/J to Choose the Preferred Option.',
+            font='Open Sans',
+            pos=(0, 250), height=32.0, wrapWidth=None, ori=0.0, 
+            color='black', colorSpace='rgb', opacity=None, 
+            languageStyle='LTR',
+            depth=-2.0)
 
         # store param estimates
         self.param_est = {
@@ -110,9 +110,15 @@ class Experiment():
             "Bisection_choice": {"L": [], "x1pos": [], "x1neg": []},
             "PEST": {"L": [], "x1pos": [], "x1neg": []},
             "PEST_choice": {"L": [], "x1pos": [], "x1neg": []},
-            # "Slider": {"L": [], "x1pos": [], "x1neg": []},
+            "Slider": {"L": [], "x1pos": [], "x1neg": []},
             # "Slider_choice": {"L": [], "x1pos": [], "x1neg": []}
         } 
+        self.total_history = {
+            "trial": [], 
+            "choice": [],
+            "param": [], # L, x1pos, x1neg 
+            "method": [], # Bisection, PEST, Slider
+        }
 
     def instruction(self):
         instruction(self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
@@ -127,58 +133,78 @@ class Experiment():
         self.textStim.height = text_config['height']
         text_only(self.textStim, duration, self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
 
-    
+
     def StimSetup(self, bound, param: str, method: str, current_trial,
-                   stumuli_path = "./Stimuli") -> None: 
-        allowed_params = ["L", "x1pos", "x1neg"]
-        allowed_methods = ['Bisection', 'PEST', 'Slider']
-        if param not in allowed_params:
-            raise ValueError(f"Invalid param: {param}. Expected one of {allowed_params}")
-        if method not in allowed_methods:
-            raise ValueError(f"Invalid method: {method}. Expected one of {allowed_methods}")
+                   stumuli_path = "./Stimuli", **kwargs) -> None:
+        '''Setup the gamble set (Background pic) and texts'''
+        self.CheckValidInput(param = param, method = method)
         
+        isSlider = kwargs.get("isSlider", False) 
         print(f"{method}: {self.param_est[method]}")
         filepath = f"{stumuli_path}/{param}.png"
         self.choice_image.image = filepath
-        if param == "L":
-            self.text_Bmid_Choice.setText("", log=False)
-        elif param == "x1pos":
+
+        text_field_map = {
+            "L": self.text_Bmid_Choice,
+            "x1pos": self.text_Adown_Choice,
+            "x1neg": self.text_Adown_Choice
+            }
+        
+        if isSlider:
             self.text_Adown_Choice.setText("", log=False)
-        elif param == "x1neg":
-            if current_trial==1: # bound update is primally for Bisection
+            self.text_Bmid_Choice.setText("", log=False)
+            self.choice_instruct.setText("Use Scrollbar to Adjust Two Option to Be Indifferent to You.", log=False)
+        elif (not isSlider) and (param in text_field_map):
+            self.choice_instruct.setText("Press F/J to Choose the Preferred Option.", log=False)
+            text_field_map[param].setText("", log=False)
+            if (param == "x1neg") and (current_trial == 1):
                 bound[0] = self.param_est[method]['L']
             self.text_Adown_Choice.setText(f"{self.param_est[method]['L']}", log=False)
 
 
-    def ChoiceUpdate(self, param, updated_lottery_value):
-        allowed_params = ["L", "x1pos", "x1neg"]
-        if param not in allowed_params:
-            raise ValueError(f"Invalid param: {param}. Expected one of {allowed_params}")
-        def get_color(value): # *int -> str
-            color_map = {True: "blue", False: "red"}
-            return color_map[value>=0]
+    def ChoiceUpdate(self, param, updated_lottery_value) -> str:
+        '''Return the Participant's Choice (Left or Right)'''
+        self.CheckValidInput(param = param)
+
+        def get_color(value: int) -> str:
+            if value == 0:
+                return "black"
+            else:
+                color_map = {True: "blue", False: "red"}
+                return color_map[value>=0]
         # Choice Pair Update
         if param == "L":
             self.text_Adown_Choice.setText(f"{int(updated_lottery_value)}", log=False)
             self.text_Adown_Choice.setColor(get_color(updated_lottery_value), colorSpace='rgb')
-        elif param == "x1pos":
-            self.text_Bmid_Choice.setText(f"{int(updated_lottery_value)}", log=False)
-            self.text_Bmid_Choice.setColor(get_color(updated_lottery_value), colorSpace='rgb')
-        elif param == "x1neg":
+        elif param == "x1pos" or param == "x1neg":
             self.text_Bmid_Choice.setText(f"{int(updated_lottery_value)}", log=False)
             self.text_Bmid_Choice.setColor(get_color(updated_lottery_value), colorSpace='rgb')
         
         # Choice update
-        trial_choice = choice(self.win, self.thisExp, self.choice_image,
+        trial_choice = choice(self.win, self.thisExp, self.choice_image, self.choice_instruct,
                               self.text_Adown_Choice, self.text_Bmid_Choice, self.key_choice, self.choosen_rect,
                               self.confirm_text, self.confirm_resp,
-                              self.routineTimer, self.defaultKeyboard)
+                              self.routineTimer, self.defaultKeyboard)        
         try:
             return trial_choice
         except:
             print("Miss")
             # self.miss = True
             return None
+
+
+    def HistoryUpdate(self, trial:int, choice:str, param:str, method:str, eval_quan:int):
+        self.CheckValidInput(param = param, method = method)
+
+        self.est_history[method][param].append(eval_quan)
+        if method != "Slider":
+            self.est_history[f'{method}_choice'][param].append(choice)
+
+        self.total_history["trial"].append(trial)
+        self.total_history["choice"].append(choice)
+        self.total_history["param"].append(param)
+        self.total_history["method"].append(method)
+        pass
 
 
     def BisectionTrial(self, current_trial, current_bisect, param, bound,
@@ -190,7 +216,8 @@ class Experiment():
         # Bisection update
         if (current_bisect <= n_bisect):
             eval_quan = sum(bound)//2
-        # elif (current_bisect <= n_bisect):
+        # If other consistnecy check needed
+        # elif (current_bisect <= n_bisect): 
         #     pass
         else: # consistency check
             ConsistCheckTrial = (current_bisect%n_bisect)-1
@@ -208,9 +235,8 @@ class Experiment():
         # Choice Pair Update
         prev_choice = self.ChoiceUpdate(param, eval_quan)
         ## Update choice history
-        self.est_history["Bisection"][param].append(eval_quan)
-        self.est_history["Bisection_choice"][param].append(prev_choice)
-
+        self.HistoryUpdate(current_trial, prev_choice, param, "Bisection", eval_quan)
+        
         # Update bound
         if (param == "L"):
             if (prev_choice == "Right"): # lower bound
@@ -224,11 +250,11 @@ class Experiment():
                 bound[0] = eval_quan
 
         self.thisExp.addData('indiff_bound', bound)
-        # record next trial
-        self.thisExp.nextEntry()
         if current_bisect == n_bisect:
             self.param_est["Bisection"][param] = sum(bound)//2
         else: pass
+        # record next trial
+        self.thisExp.nextEntry()
         return bound
 
 
@@ -239,7 +265,10 @@ class Experiment():
         last_choices = PEST_params["last_choices"] # last 4 choices: list
         extra_step = PEST_params["extra_step"] # should extra step: bool
         # function: find initial step 
-        def InitStepSize(bound): 
+        def InitStepSize(bound):
+            """
+            Step size = 5 times powers of 2, and is smaller than 1/4 of the interval size.
+            """
             # Ensure n is greater than 1
             interval = bound[1] - bound[0]
             step = 5
@@ -277,8 +306,7 @@ class Experiment():
         # 2. Record and Update Choice
         prev_choice = self.ChoiceUpdate(param, eval_quan)
         ## Update choice history
-        self.est_history["PEST"][param].append(eval_quan)
-        self.est_history["PEST_choice"][param].append(prev_choice)
+        self.HistoryUpdate(current_trial, prev_choice, param, "PEST", eval_quan)
         last_choices.insert(0, prev_choice)
         last_choices.pop()
 
@@ -322,27 +350,38 @@ class Experiment():
 
 
     def SliderTrial(self, current_trial, current_bisect, param, bound: np.array, 
-                    stumuli_path = "./Stimuli"):
-        # Setup Choice-Pair Background
-        self.StimSetup(bound, param, "Slider", current_bisect, stumuli_path)
+                    stumuli_path = "./Stimuli") -> None:
         expand = (bound[1]-bound[0])//2 # half of range
         new_bound = [(bound[0] - expand), (bound[1] + expand)]
-        self.slider.labels = [str(i) for i in new_bound]
-        self.slider.ticks = new_bound
-        self.slider.setValue((bound[1] + bound[0])//2 ) # midpoint
+        # self.slider.labels = [str(i) for i in new_bound] # don't show bound
+        self.slider.ticks = [ i for i in range(new_bound[0], new_bound[1]+1, 5)]
+        self.slider.rating = ((bound[1] + bound[0])//2 ) # midpoint
+        self.slider.markerPos = ((bound[1] + bound[0])//2 ) # midpoint
+
+        # Setup Choice-Pair Background
+        self.StimSetup(bound, param, "Slider", current_bisect, stumuli_path, isSlider = True)
 
         # Record Trial Information
         self.thisExp.addData('Trial', current_trial)
         self.thisExp.addData('Task_Type', "Slider")
         self.thisExp.addData('Estimate', param)
         self.thisExp.addData('Iteration', current_bisect)
-        slider_task()
-        self.thisExp.nextEntry()
-        # slider setup
-        # 1. bound values
-        # 2. starting point
+        self.thisExp.addData('indiff_bound', new_bound)
+        indiff = slider_task(self.win, self.thisExp, param,
+                             self.choice_image, self.choice_instruct, self.slider,
+                             self.text_Adown_Choice, self.text_Bmid_Choice, 
+                             self.confirm_text, self.confirm_resp,
+                             self.routineTimer, self.defaultKeyboard)
 
-        pass
+        # Update Choice History
+        self.HistoryUpdate(current_trial, None, param, "Slider", indiff)
+        self.est_history["Slider"][param].append(indiff)
+        # Set mean of slider respnese as indiff estimation
+        self.param_est["Slider"][param] = int(sum(self.est_history["Slider"][param])//len(self.est_history["Slider"][param]))
+        
+        # record next trial
+        self.thisExp.nextEntry()
+        return
 
 
     def RecordFinalEst(self, method:str) -> None:   
@@ -350,3 +389,24 @@ class Experiment():
         for est in self.param_est[method]:
             self.thisExp.addData(est, self.param_est[method][est]) # updated lottery value in this trial
         self.thisExp.nextEntry()
+
+
+    def FinalBonus(self):
+        '''
+        Returns the extra bonus from participant's choice.
+        Randomly pick one trial to play.
+        '''
+        # TODO
+        pass
+
+
+    def CheckValidInput(self, **kwargs):
+        param = kwargs.get("param", "L")
+        method = kwargs.get("method", "PEST")
+        allowed_params = ["L", "x1pos", "x1neg"]
+        allowed_methods = ['Bisection', 'PEST', 'Slider']
+        if param not in allowed_params:
+            raise ValueError(f"Invalid param: {param}. Expected one of {allowed_params}")
+        if method not in allowed_methods:
+            raise ValueError(f"Invalid method: {method}. Expected one of {allowed_methods}")
+        pass
