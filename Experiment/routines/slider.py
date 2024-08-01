@@ -9,16 +9,30 @@ from numpy.random import choice as randchoice
 def slider_task(win, thisExp, param,
             img_choice, choice_instruct, slider,
             text_Adown_Choice, text_Bmid_Choice,
-            confirm_text, confirm_resp,
+            confirm_text,
+            confirm_resp,
             routineTimer, defaultKeyboard) -> int:
     # --- Prepare stimulus for Routine "slider" --- 
-
     frameTolerance = 0.001
     endExpNow = False
+    slider_ticks = slider.ticks 
+    slider_granularity=5
+    sliding = 0
+    slideSpeed = 3
+    oldRating = -1 # Not response yet
+    thisFrame = 0  # Add a frame counter for delay
+
     # --- Prepare to start Routine "slider" ---
     continueRoutine = True
 
-    # Run 'Begin Routine' code from code_2
+    # a keyboard object (must differ from object used online)
+    mykb = keyboard.Keyboard()    
+    # which keys are we watching? (these will differ depending on handedness)
+    keysWatched=['f', 'j', 'space']
+    # key statuses at the start of the routine
+    keyStatus = {'f': 'up', 'j': 'up', 'space': 'up'}
+    
+
     slider.reset()
     slider.Response = False
     # event.clearEvents('keyboard') # not sure if needed 
@@ -74,20 +88,6 @@ def slider_task(win, thisExp, param,
         if img_choice.status == STARTED:
             # update params
             pass
-        '''        
-        # if img_choice is stopping this frame...
-        if img_choice.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > img_choice.tStartRefresh + 3-frameTolerance:
-                # keep track of stop time/frame for later
-                img_choice.tStop = t  # not accounting for scr refresh
-                img_choice.frameNStop = frameN  # exact frame index
-                # add timestamp to datafile
-                thisExp.timestampOnFlip(win, 'img_choice.stopped')
-                # update status
-                img_choice.status = FINISHED
-                img_choice.setAutoDraw(False)
-        '''
 
         # *choice_instruct/text_Adown_Choice/text_Bmid_Choice* updates
         
@@ -154,6 +154,60 @@ def slider_task(win, thisExp, param,
                 text_Bmid_Choice.setColor(get_color(update_value), log=False)
             pass
         
+        # Poll the keyboard
+        keys = mykb.getKeys(keysWatched, waitRelease = False, clear = False)
+
+        for key in keysWatched:
+            if any([k.name == key and k.duration is None for k in keys]):
+                keyStatus[key] = 'down'
+            else:
+                keyStatus[key] = 'up'
+        
+        # End routine with keyboard
+        if slider.markerPos and keyStatus['space'] == 'down':  # 'space' key
+            continueRoutine = False
+
+        # Move slider with keyboard
+        if keyStatus['f'] == 'down':  # 'f' key
+            sliding = -slider_granularity
+        elif keyStatus['j'] == 'down':  # 'j' key
+            sliding = slider_granularity
+        else:
+            sliding = 0
+
+        # if thisFrame%5 == 0:
+        #     print(f'{keyStatus}, Is sliding: {sliding}, {thisFrame}')
+        
+        if sliding != 0:
+            if oldRating == -1:
+                slider.markerPos = int((slider_ticks[0]+slider_ticks[-1])//2)
+            if thisFrame%slideSpeed == 0:
+                slider.markerPos += sliding
+            slider.rating = slider.markerPos
+            thisFrame += 1 # Increment the frame counter
+            if thisFrame > 20:
+                slideSpeed = 1
+                if thisFrame%20 == 1:
+                    slider_granularity += 5
+
+        # Reset the frame counter and slideSpeed if no key is pressed
+        elif sliding == 0: 
+            thisFrame = 0
+            slideSpeed = 5
+            slider_granularity = 5
+        
+        #Update slider text if needed
+        if slider.markerPos:
+            if not slider.Response:
+                slider.Response = True
+            if oldRating != slider.markerPos:
+                confirm_text.setText(f"{int(slider.markerPos)}\n Press Space to Confirm",
+                                      log=False)
+                oldRating = slider.markerPos
+        
+        # thisFrame += 1
+
+
         # *slider* updates
         # if slider is starting this frame...
         if slider.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
@@ -173,30 +227,6 @@ def slider_task(win, thisExp, param,
             # update params
             pass
 
-        # Slider Key variables
-        # which keys are we watching? (these will differ depending on handedness)
-        keysWatched=['f', 'j']
-        # keysWatched=['left', 'right', 'return']
-        # what are the assumed key statuses at the start of the routine
-        status =['up', 'up']        
-        mykb = keyboard.Keyboard()
-        keys = mykb.getKeys(keysWatched)
-        # keys = mykb.getKeys(keysWatched, waitRelease = False, clear=True)
-        # how many keyPresses have been counted so far
-        # keyCount = 0 
-        # statusList = []
-
-        if len(keys):
-            # print(f"{slider.labels} ")
-            if (not slider.Response) and (any(key.name in ['f', 'j'] for key in keys)):
-                slider.Response = True
-                slider.markerPos = (slider.ticks[1] + slider.ticks[-1]) // 2
-                slider.rating = slider.markerPos
-            elif any(key.name == 'f' for key in keys):
-                slider.markerPos = max(slider.ticks[0], slider.markerPos - 5)
-            elif any(key.name == 'j' for key in keys):
-                slider.markerPos = min(slider.ticks[-1], slider.markerPos + 5)
-            slider.rating = slider.markerPos
             
         # *confirm_text* updates
         
@@ -213,10 +243,11 @@ def slider_task(win, thisExp, param,
             confirm_text.status = STARTED
             confirm_text.setAutoDraw(True)
         
-        # if confirm_text is active this frame...
-        if confirm_text.status == STARTED and slider.Response:
-            # update params
-            confirm_text.setText(f"{int(slider.markerPos)}\n Press Space to Confirm", log=False)
+        # # if confirm_text is active this frame...
+        # if confirm_text.status == STARTED and slider.Response:
+        #     # update params
+        #     # confirm_text.setText(f"{int(slider.markerPos)}\n Press Space to Confirm", log=False)
+        #     pass
         
         # *confirm_resp* updates
         waitOnFlip = False

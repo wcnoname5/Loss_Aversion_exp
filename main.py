@@ -122,7 +122,7 @@ fixation = {"name": "fixation_1",
              "height": 48}
 
 Hold = {"name": "Hold", 
-             "text": "Hold on, Plz", 
+             "text": "Hold on.", 
              "pos": (0,0), 
              "height": 48}
 
@@ -171,17 +171,20 @@ for param in params:
         Exp.text_only(text_config=fixation, duration=0.5)
         if run_PEST:
             PEST_trial += 1
-            PEST_params, PESTconv = Exp.PESTTrial(trial, PEST_trial, param, bound, PEST_params, minimal_step)
+            if not PESTconv:
+                PEST_params, PESTconv = Exp.PESTTrial(trial, PEST_trial, param, bound, PEST_params, minimal_step)
+            else: # if PEST converge before bisection end
+                pass
         else:
             bisect_trial += 1
             bisect_bound = Exp.BisectionTrial(trial, bisect_trial, param, bisect_bound, n_bisect)
         # Slider Trial
-        if (bisect_trial in [3, 7]) and (PEST_trial == bisect_trial): 
+        if (bisect_trial in [3, 6]) and (PEST_trial == bisect_trial): 
             trial += 1
             Exp.text_only(text_config=fixation, duration=0.5)
             Exp.SliderTrial(trial, bisect_trial, param, bisect_bound)
         
-        converge = PESTconv & (bisect_trial >= n_bisect)
+        converge = PESTconv & (bisect_trial >= (n_bisect+2))
 
 for method in ["Bisection", "PEST", "Slider"]:
     Exp.RecordFinalEst(method)

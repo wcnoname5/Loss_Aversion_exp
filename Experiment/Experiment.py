@@ -144,22 +144,26 @@ class Experiment():
         filepath = f"{stumuli_path}/{param}.png"
         self.choice_image.image = filepath
 
-        text_field_map = {
+        fixed_text_map = {
             "L": self.text_Bmid_Choice,
             "x1pos": self.text_Adown_Choice,
             "x1neg": self.text_Adown_Choice
             }
         
         if isSlider:
+            self.choice_instruct.setText("Press F/J to Adjust Until Two Options are Indifferent to You.", log=False)
             self.text_Adown_Choice.setText("", log=False)
             self.text_Bmid_Choice.setText("", log=False)
-            self.choice_instruct.setText("Use Scrollbar to Adjust Two Option to Be Indifferent to You.", log=False)
-        elif (not isSlider) and (param in text_field_map):
+            if (param == "x1neg"):
+                fixed_text_map[param].setText(f"{self.param_est[method]['L']}", log=False)
+        elif (not isSlider) and (param in fixed_text_map):
             self.choice_instruct.setText("Press F/J to Choose the Preferred Option.", log=False)
-            text_field_map[param].setText("", log=False)
-            if (param == "x1neg") and (current_trial == 1):
-                bound[0] = self.param_est[method]['L']
-            self.text_Adown_Choice.setText(f"{self.param_est[method]['L']}", log=False)
+            if param == "x1neg":
+                if current_trial == 1:
+                    bound[0] = self.param_est[method]['L']
+                fixed_text_map[param].setText(f"{self.param_est[method]['L']}", log=False)
+            else:
+                fixed_text_map[param].setText("", log=False)
 
 
     def ChoiceUpdate(self, param, updated_lottery_value) -> str:
@@ -217,14 +221,22 @@ class Experiment():
         if (current_bisect <= n_bisect):
             eval_quan = sum(bound)//2
         # If other consistnecy check needed
-        # elif (current_bisect <= n_bisect): 
-        #     pass
+        elif (current_bisect == n_bisect + 1): 
+            ConsistCheckTrial = 4
+            eval_quan = self.est_history['Bisection'][param][ConsistCheckTrial]
+            self.thisExp.addData('Consist_Check_Trial', ConsistCheckTrial)
+            pass
+        elif (current_bisect == n_bisect + 2): 
+            ConsistCheckTrial = 6
+            eval_quan = self.est_history['Bisection'][param][ConsistCheckTrial]
+            self.thisExp.addData('Consist_Check_Trial', ConsistCheckTrial)
+            pass
         else: # consistency check
-            ConsistCheckTrial = (current_bisect%n_bisect)-1
+            ConsistCheckTrial = ((current_bisect+2)%n_bisect)-1
             eval_quan = self.est_history['Bisection'][param][ConsistCheckTrial]
             self.thisExp.addData('Consist_Check_Trial', ConsistCheckTrial)
              
-        print(f"Bisection: {param} - {current_bisect};{eval_quan}, Total Trial:{current_trial}")
+        print(f"Bisection: {param}-{current_bisect}; {eval_quan}, Total Trial:{current_trial}")
         # Record Trial Information
         self.thisExp.addData('Trial', current_trial)
         self.thisExp.addData('Task_Type', "Bisection")
@@ -267,12 +279,12 @@ class Experiment():
         # function: find initial step 
         def InitStepSize(bound):
             """
-            Step size = 5 times powers of 2, and is smaller than 1/4 of the interval size.
+            Step size = 5 times powers of 2, and is smaller than 1/2 of the interval size.
             """
             # Ensure n is greater than 1
             interval = bound[1] - bound[0]
             step = 5
-            while step*2 < interval/4:
+            while step*2 < interval/2:
                 step *= 2
             return step
         
@@ -294,7 +306,7 @@ class Experiment():
             else: pass
             # Update Lottery Pair Value
             eval_quan = eval_quan + (direction * step)
-        print(f"PEST: {param} - {current_PEST};{eval_quan}, Step Size: {step} Total Trial:{current_trial}")
+        print(f"PEST: {param}-{current_PEST}; {eval_quan}, Step Size: {step} Total Trial:{current_trial}")
 
         # Record Trial Information
         self.thisExp.addData('Trial', current_trial)
@@ -351,12 +363,21 @@ class Experiment():
 
     def SliderTrial(self, current_trial, current_bisect, param, bound: np.array, 
                     stumuli_path = "./Stimuli") -> None:
-        expand = (bound[1]-bound[0])//2 # half of range
-        new_bound = [(bound[0] - expand), (bound[1] + expand)]
+        def multOf5Low(expand): # closest lower multiple of 5
+            return int((expand // 5) * 5)
+        def multOf5Up(n): # closest upper multiple of 5
+            return int(((n + 4) // 5) * 5)
+        def adjust_to_multiples_of_5(lst):
+            a, b = lst
+            a2 = multOf5Low(a)
+            b2 = multOf5Up(b)
+            return [int(a2), int(b2)]
+        expand = (bound[1] - bound[0])//2 # half of range
+        new_bound = adjust_to_multiples_of_5([(bound[0] - expand), (bound[1] + expand)])
         # self.slider.labels = [str(i) for i in new_bound] # don't show bound
         self.slider.ticks = [ i for i in range(new_bound[0], new_bound[1]+1, 5)]
-        self.slider.rating = ((bound[1] + bound[0])//2 ) # midpoint
-        self.slider.markerPos = ((bound[1] + bound[0])//2 ) # midpoint
+        self.slider.rating = multOf5Low(sum(new_bound)//2 ) # midpoint
+        self.slider.markerPos = multOf5Low(sum(new_bound)//2 ) # midpoint
 
         # Setup Choice-Pair Background
         self.StimSetup(bound, param, "Slider", current_bisect, stumuli_path, isSlider = True)
@@ -377,7 +398,8 @@ class Experiment():
         self.HistoryUpdate(current_trial, None, param, "Slider", indiff)
         self.est_history["Slider"][param].append(indiff)
         # Set mean of slider respnese as indiff estimation
-        self.param_est["Slider"][param] = int(sum(self.est_history["Slider"][param])//len(self.est_history["Slider"][param]))
+        sliderHistory = self.est_history["Slider"][param]
+        self.param_est["Slider"][param] = int(sum(sliderHistory)//len(sliderHistory))
         
         # record next trial
         self.thisExp.nextEntry()
