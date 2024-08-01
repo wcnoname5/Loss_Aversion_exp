@@ -73,11 +73,13 @@ frameTolerance = 0.001  # how close to onset before 'same' frame
 # Start Code - component code to be run after the window creation
 
 # --- Setup the Window ---
-winsize = (1280, 720)
+# winsize = (1280, 720)
+winsize = (2560, 1440)
 win = visual.Window(
     size=winsize, 
     # size=(1920, 1080), 
-    fullscr=False,
+    # fullscr=False,
+    fullscr=True,
     screen=0, 
     winType='pyglet', allowStencil=False,
     monitor='testMonitor', color=[-1.0000, -1.0000, -1.0000], colorSpace='rgb',
@@ -111,7 +113,8 @@ defaultKeyboard = keyboard.Keyboard(backend='iohub')
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.Clock()  # to track time remaining of each (possibly non-slip) routine 
 
-Exp = Experiment(win, thisExp, routineTimer, defaultKeyboard, size = winsize)
+G = 2000
+Exp = Experiment(win, thisExp, routineTimer, defaultKeyboard, size = winsize, G=G)
 
 ## instruction
 # Exp.instruction()
@@ -133,7 +136,6 @@ End = {"name": "tmp_End",
 
 # ---------------Setup-----------------
 n_bisect = 10 # 10
-G = 2000
 params = ["L", "x1pos", "x1neg"] 
 # params = ["L","x1neg"] # for testing
 stumuli_path = "./Stimuli" 
@@ -145,7 +147,6 @@ bounds = {
 }  
 minimal_step = 5 # stop criterion, 5
 trial = 0
-
 
 ## Experiment start
 
@@ -160,7 +161,7 @@ for param in params:
                 "extra_step":False}
     PESTconv = False
     converge = False
-    Exp.text_only(text_config=Hold, duration=0.5)
+    # Exp.text_only(text_config=Hold, duration=0.5)
     while not converge:
         trial += 1
         if PEST_trial == bisect_trial: # random order
@@ -190,63 +191,6 @@ for method in ["Bisection", "PEST", "Slider"]:
     Exp.RecordFinalEst(method)
 Exp.text_only(text_config=End, duration=1)
 
-# for trial in range(520):
-
-#     ## fixation_1 0.5s
-#     Exp.text_only(text_config=fixation1, duration=0.5)
-
-#     ## choice
-#     choice_jar = Exp.choice()
-
-#     # -- Prepare stimlus for Routine "jar_reminder" --- 
-#     if choice_jar:
-#         ## jar_reminder
-#         Exp.jar_reminder(choice_jar)
-
-#         ## fixation_2 0.5s
-#         Exp.text_only(text_config=fixation2, duration=0.5) f
-
-#         ## get_cues
-#         cueslist, ans_jar = Exp.get_cue(trial)
-
-#         ## cue
-#         Exp.cues(choice_jar, cueslist)
-
-#         ## fixation_3 0.7s
-#         Exp.text_only(text_config=fixation3, duration=0.7)
-
-#         ## feedback 0.5s
-#         isCorrect = ans_jar == choice_jar
-#         if isCorrect:
-#             thisExp.addData('isCorrect', 1)
-#             text_feedback = '+200'
-#             Exp.subj_correctness_list.append(200)
-#         else:
-#             thisExp.addData('isCorrect', 0)
-#             text_feedback = '+0'
-#             Exp.subj_correctness_list.append(0)
-
-#         Exp.text_only(text_config={"name": "feedback", 
-#                                "text": text_feedback, 
-#                                "height": 72,
-#                                "pos": (0,0),
-#                                "eeg_trigger": Exp.feedback_trigger[f'{isCorrect}|{choice_jar}|{sum(cueslist)}']}, 
-#                                duration=1)
-            
-#     else:
-#         ## miss
-#         Exp.text_only(text_config={"name": "missed", 
-#                                "text": "Missed", 
-#                                "height": 48,
-#                                "pos": (0,0),
-#                                "eeg_trigger": chr(93)}, duration=0.5)
-            
-#     if trial == 258: # Break after the trial of no. 259 trial (index = 258)
-#         ## break
-#         Exp.break_screen()
-
-#     # record next trial
-#     Exp.thisExp.nextEntry()
 
 # ## reward
 # final_reward = np.random.choice(Exp.subj_correctness_list)

@@ -7,7 +7,8 @@ from numpy.random import choice as randchoice
 
 
 def choice(win, thisExp,
-            img_choice, choice_instruct, text_Adown_Choice, text_Bmid_Choice,
+            img_choice, choice_instruct,
+            text_Aup_Choice, text_Adown_Choice, text_Bmid_Choice,
             key_choice, choosen_rect,
             confirm_text_2fac, confirm_resp,
             routineTimer, defaultKeyboard) -> str:
@@ -29,12 +30,13 @@ def choice(win, thisExp,
     event.clearEvents('keyboard') # not sure if needed 
     ChoiceKeyResponded = False
     chosen_text = ""
+    x, y = (262.5*2, 165*2)
     rect_pos = (0, 0)
     confirm_resp.keys = []
     confirm_resp.rt = []
     _confirm_resp_allKeys = []
     # keep track of which components have finished
-    choiceComponents = [img_choice, choice_instruct, text_Adown_Choice, text_Bmid_Choice , key_choice, choosen_rect, confirm_text_2fac, confirm_resp]
+    choiceComponents = [img_choice, choice_instruct, text_Aup_Choice, text_Adown_Choice, text_Bmid_Choice , key_choice, choosen_rect, confirm_text_2fac, confirm_resp]
     for thisComponent in choiceComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -76,23 +78,8 @@ def choice(win, thisExp,
         if img_choice.status == STARTED:
             # update params
             pass
-        '''        
-        # if img_choice is stopping this frame...
-        if img_choice.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > img_choice.tStartRefresh + 3-frameTolerance:
-                # keep track of stop time/frame for later
-                img_choice.tStop = t  # not accounting for scr refresh
-                img_choice.frameNStop = frameN  # exact frame index
-                # add timestamp to datafile
-                thisExp.timestampOnFlip(win, 'img_choice.stopped')
-                # update status
-                img_choice.status = FINISHED
-                img_choice.setAutoDraw(False)
-        '''
 
         # *choice_instruct/text_Adown_Choice/text_Bmid_Choice* updates
-
         # if choice_instruct is starting this frame...
         if choice_instruct.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
             # keep track of start time/frame for later
@@ -111,6 +98,23 @@ def choice(win, thisExp,
             # update params
             pass
 
+        # if text_Aup_Choice is starting this frame...
+        if text_Aup_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            # keep track of start time/frame for later
+            text_Aup_Choice.frameNStart = frameN  # exact frame index
+            text_Aup_Choice.tStart = t  # local t and not account for scr refresh
+            text_Aup_Choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(text_Aup_Choice, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'text_Aup_Choice.started')
+            # update status
+            text_Aup_Choice.status = STARTED
+            text_Aup_Choice.setAutoDraw(True)
+        
+        # if text_Aup_Choice is active this frame...
+        if text_Aup_Choice.status == STARTED:
+            # update params
+            pass
         # if text_Adown_Choice is starting this frame...
         if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
             # keep track of start time/frame for later
@@ -150,7 +154,6 @@ def choice(win, thisExp,
         
         # *key_choice* updates
         waitOnFlip = False
-        # print(f'Status:{key_choice.status}, WaitOnFilp: {waitOnFlip}')
         # if key_choice is starting this frame...
         if key_choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
             # keep track of start time/frame for later
@@ -181,25 +184,13 @@ def choice(win, thisExp,
                 # update choice:
                 if key_choice.keys == 'f':
                     chosen_text = "A"
-                    rect_pos = (-270, 170)
+                    rect_pos = (-x, y)
                 elif key_choice.keys == 'j':
                     chosen_text = "B"
-                    rect_pos = (260, 170)
+                    rect_pos = (x, y)
                 conf_text = f"{chosen_text} Chosen \n Press Space to Confirm"
 
-        # keys = event.getKeys()
-        # if 'f' in keys or 'j' in keys:
-        #     # print(ChoiceKeyResponded)
-        #     ChoiceKeyResponded = True
-        #     # print(ChoiceKeyResponded)
-        #     if 'f' in keys:
-        #         chosen_text= "A"
-        #         rect_pos = (-270,170)
-        #     elif 'j' in keys:
-        #         chosen_text= "B"
-        #         rect_pos = (260,170)
-        #     conf_text = f"{chosen_text} Chosen \n Press Space to Confirm"
-        
+
          # *confirm_text_2fac* updates
         
         # if confirm_text_2fac is starting this frame...

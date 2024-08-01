@@ -8,7 +8,7 @@ from numpy.random import choice as randchoice
 
 def slider_task(win, thisExp, param,
             img_choice, choice_instruct, slider,
-            text_Adown_Choice, text_Bmid_Choice,
+            text_Aup_Choice, text_Adown_Choice, text_Bmid_Choice,
             confirm_text,
             confirm_resp,
             routineTimer, defaultKeyboard) -> int:
@@ -18,7 +18,7 @@ def slider_task(win, thisExp, param,
     slider_ticks = slider.ticks 
     slider_granularity=5
     sliding = 0
-    slideSpeed = 3
+    slideSpeed = 8
     oldRating = -1 # Not response yet
     thisFrame = 0  # Add a frame counter for delay
 
@@ -46,7 +46,7 @@ def slider_task(win, thisExp, param,
             color_map = {True: "blue", False: "red"}
             return color_map[value>=0]
     # keep track of which components have finished
-    choiceComponents = [img_choice, choice_instruct, slider, text_Adown_Choice, text_Bmid_Choice, confirm_text, confirm_resp]
+    choiceComponents = [img_choice, choice_instruct, slider, text_Aup_Choice, text_Adown_Choice, text_Bmid_Choice, confirm_text, confirm_resp]
     for thisComponent in choiceComponents:
         thisComponent.tStart = None
         thisComponent.tStop = None
@@ -109,6 +109,19 @@ def slider_task(win, thisExp, param,
             # update params
             pass
 
+        # if text_Aup_Choice is starting this frame...
+        if text_Aup_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+            # keep track of start time/frame for later
+            text_Aup_Choice.frameNStart = frameN  # exact frame index
+            text_Aup_Choice.tStart = t  # local t and not account for scr refresh
+            text_Aup_Choice.tStartRefresh = tThisFlipGlobal  # on global time
+            win.timeOnFlip(text_Aup_Choice, 'tStartRefresh')  # time at next scr refresh
+            # add timestamp to datafile
+            thisExp.timestampOnFlip(win, 'text_Aup_Choice.started')
+            # update status
+            text_Aup_Choice.status = STARTED
+            text_Aup_Choice.setAutoDraw(True)
+
         # if text_Adown_Choice is starting this frame...
         if text_Adown_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
             # keep track of start time/frame for later
@@ -130,7 +143,6 @@ def slider_task(win, thisExp, param,
                 text_Adown_Choice.setText(update_value, log=False)
                 text_Adown_Choice.setColor(get_color(update_value), log=False)
             pass
-
         # text_Bmid_Choice
         # if text_Bmid_Choice is starting this frame...
         if text_Bmid_Choice.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
@@ -185,15 +197,15 @@ def slider_task(win, thisExp, param,
                 slider.markerPos += sliding
             slider.rating = slider.markerPos
             thisFrame += 1 # Increment the frame counter
-            if thisFrame > 20:
-                slideSpeed = 1
-                if thisFrame%20 == 1:
+            if thisFrame > 40:
+                if thisFrame%20 == 0:
                     slider_granularity += 5
+                    slideSpeed = max(slideSpeed-3, 1)
 
         # Reset the frame counter and slideSpeed if no key is pressed
         elif sliding == 0: 
             thisFrame = 0
-            slideSpeed = 5
+            slideSpeed = 8
             slider_granularity = 5
         
         #Update slider text if needed

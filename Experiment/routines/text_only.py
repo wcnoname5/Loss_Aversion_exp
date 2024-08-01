@@ -27,6 +27,8 @@ def text_only(textStim, duration, win, thisExp, routineTimer, defaultKeyboard):
     t = 0
     _timeToFirstFrame = win.getFutureFlipTime(clock="now")
     frameN = -1
+    # Ensure tThisFlipGlobal is initialized
+    tThisFlipGlobal = win.getFutureFlipTime(clock=None)
 
     # --- Run Routine "showText" ---
     routineForceEnded = not continueRoutine

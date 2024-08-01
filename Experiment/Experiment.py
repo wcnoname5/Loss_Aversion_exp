@@ -2,8 +2,6 @@ from .routines.instruction import instruction
 from .routines.text_only import text_only
 from .routines.choice import choice
 from .routines.slider import slider_task
-# from .routines.jar_reminder import jar_reminder
-# from .routines.cues import cues
 # from .routines.break_screen import break_screen
 from psychopy.hardware import keyboard
 from psychopy import sound, gui, visual, core, data, event, logging, clock, colors, layout
@@ -11,12 +9,13 @@ import numpy as np
 import pandas as pd
 
 class Experiment():
-    def __init__(self, win, thisExp, routineTimer, defaultKeyboard, size) -> None:
+    def __init__(self, win, thisExp, routineTimer, defaultKeyboard, size, G:int) -> None:
         self.win = win
         self.thisExp = thisExp
         self.routineTimer = routineTimer
         self.defaultKeyboard = defaultKeyboard
         self.size = size
+        self.G = G
 
         # --- Initialize components for Routine "showText" ---
         self.textStim = visual.TextStim(win=win,
@@ -31,32 +30,27 @@ class Experiment():
             win=self.win,
             name='img_choice',
             size = self.size,
-            image='Stimuli/L.png', mask=None, anchor='center',
+            image='Stimuli/choices.png', mask=None, anchor='center',
             ori=0.0, pos=(0, 0), # tbd
             color=[1,1,1], colorSpace='rgb', opacity=None,
             flipHoriz=False, flipVert=False,
             texRes=128.0, interpolate=True, depth=0.0)
 
-        # --- Initialize components for Routine "choice" ---
-        self.Instruction_Text = visual.TextStim(
-            win=self.win, name='Instruction_Text',
-            text='Press F/J to choose Left/Right Lottery',
-            font='Open Sans',
-            pos=(0, +200), height=36.0, wrapWidth=None, ori=0.0, 
-            color='black', colorSpace='rgb', opacity=None, 
-            languageStyle='LTR',
-            depth=-3.0)  
+        # --- Initialize components for Routine "choice" ---  
         self.choosen_rect = visual.Rect(
             win=self.win, name='choosen_rect',
-            width=100, height=100,
-            ori=0.0, pos=(200, -200), anchor='center',
+            ori=0.0, anchor='center',
+            # pos=(262.5, -165), width=90, height=90,
+            pos=(262.5*2, 165*2), width=180, height=180,
             lineWidth=2.0, colorSpace='rgb', lineColor='red', fillColor=None,
             opacity=None, depth=-5.0, interpolate=True)
         self.key_choice = keyboard.Keyboard()
 
         # --- Initialize components for Routine "slider" ---
         self.slider = visual.Slider(win=win, name='slider',
-            size=(540, 40), pos=(0, -180), units=win.units,
+            # size=(540, 40), pos=(0, -180),
+            size=(540*2, 40*2), pos=(0, -360),
+            units=win.units,
             ticks=None, granularity=5,
             style='scrollbar', styleTweaks=(), opacity=None,
             labelColor='LightGray', markerColor='Grey', lineColor='White', colorSpace='rgb',
@@ -64,12 +58,34 @@ class Experiment():
             flip=False, ori=0.0, depth=-2, readOnly=False)
         
         # --- Initialize common components ---
+        self.choice_instruct = visual.TextStim(win=self.win, name='choice_instruct',
+            text='Press F/J to Choose the Preferred Option.',
+            font='Open Sans',
+            # pos=(0, 260), height=30.0,
+            pos=(0, 260*2), height=60.0,
+            wrapWidth=1500, ori=0.0, 
+            color='black', colorSpace='rgb', opacity=None, 
+            languageStyle='LTR',
+            depth=-2.0)
+        self.text_Aup_Choice = visual.TextStim(
+            win=self.win, name='text_up_Choice',
+            text="",
+            font='Open Sans', #'Arial'
+            # 原本 pos(-150.6,-75.8)
+            # pos=(-135, 75), height=35, # For winsize = (1280, 720)            
+            pos=(-135*2, 75*2), height=70,
+            wrapWidth=None, ori=0,
+            color='red', colorSpace='rgb', opacity=1,
+            languageStyle='LTR',
+            depth=-5.0)
         self.text_Adown_Choice = visual.TextStim(
             win=self.win, name='text_Adown_Choice',
             text="-2000",
             font='Open Sans', #'Arial'
             # 原本 pos(-150.6,-75.8)
-            pos=(-150.6, -69.8), height=35, wrapWidth=None, ori=0,
+            # pos=(-135, -75), height=35, # For winsize = (1280, 720)            
+            pos=(-135*2, -75*2), height=70,
+            wrapWidth=None, ori=0,
             color='red', colorSpace='rgb', opacity=1,
             languageStyle='LTR',
             depth=-5.0)
@@ -77,7 +93,9 @@ class Experiment():
             win=self.win, name='text_Amid_Choice',
             text="",
             font='Open Sans', #'Arial'
-            pos=(376.5, 3), height=35, wrapWidth=None, ori=0,
+            # pos=(415, 0), height=35,
+            pos=(415*2, 0), height=35*2,
+            wrapWidth=None, ori=0,
             color='red', colorSpace='rgb', opacity=1,
             languageStyle='LTR',
             depth=-5.0)
@@ -85,18 +103,13 @@ class Experiment():
             win=self.win, name='confirm_text',
             text='',
             font='Open Sans',
-            pos=(0, -250), height=36.0, wrapWidth=None, ori=0.0, 
+            # pos=(0, -250), height = 32.0, 
+            pos=(0, -500), height=64.0, 
+            wrapWidth=1500, ori=0.0, 
             color='black', colorSpace='rgb', opacity=None, 
             languageStyle='LTR',
             depth=-3.0)
         self.confirm_resp = keyboard.Keyboard()
-        self.choice_instruct = visual.TextStim(win=self.win, name='choice_instruct',
-            text='Press F/J to Choose the Preferred Option.',
-            font='Open Sans',
-            pos=(0, 250), height=32.0, wrapWidth=None, ori=0.0, 
-            color='black', colorSpace='rgb', opacity=None, 
-            languageStyle='LTR',
-            depth=-2.0)
 
         # store param estimates
         self.param_est = {
@@ -134,60 +147,61 @@ class Experiment():
         text_only(self.textStim, duration, self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
 
 
-    def StimSetup(self, bound, param: str, method: str, current_trial,
-                   stumuli_path = "./Stimuli", **kwargs) -> None:
-        '''Setup the gamble set (Background pic) and texts'''
+    def StimSetup(self, bound, param: str, method: str, current_trial, **kwargs) -> None:
+        '''Setup the gamble set, Background texts'''
         self.CheckValidInput(param = param, method = method)
         
         isSlider = kwargs.get("isSlider", False) 
         print(f"{method}: {self.param_est[method]}")
-        filepath = f"{stumuli_path}/{param}.png"
-        self.choice_image.image = filepath
-
-        fixed_text_map = {
-            "L": self.text_Bmid_Choice,
-            "x1pos": self.text_Adown_Choice,
-            "x1neg": self.text_Adown_Choice
-            }
-        
         if isSlider:
             self.choice_instruct.setText("Press F/J to Adjust Until Two Options are Indifferent to You.", log=False)
-            self.text_Adown_Choice.setText("", log=False)
-            self.text_Bmid_Choice.setText("", log=False)
-            if (param == "x1neg"):
-                fixed_text_map[param].setText(f"{self.param_est[method]['L']}", log=False)
-        elif (not isSlider) and (param in fixed_text_map):
+            text_map = {            
+                "L": self.text_Adown_Choice,
+                "x1pos": self.text_Bmid_Choice,
+                "x1neg": self.text_Bmid_Choice
+                }
+            text_map[param].setText("", log = False) # no prompt in initial value
+        else:
             self.choice_instruct.setText("Press F/J to Choose the Preferred Option.", log=False)
-            if param == "x1neg":
-                if current_trial == 1:
-                    bound[0] = self.param_est[method]['L']
-                fixed_text_map[param].setText(f"{self.param_est[method]['L']}", log=False)
-            else:
-                fixed_text_map[param].setText("", log=False)
+
+        fixed_text_map = {
+            "L": [self.text_Aup_Choice, self.text_Bmid_Choice],
+            "x1pos": [self.text_Aup_Choice, self.text_Adown_Choice],
+            "x1neg": [self.text_Aup_Choice, self.text_Adown_Choice]
+            }
+        
+        if param != "x1neg":
+            if isSlider: 
+                print(fixed_text_map[param][0].text)
+            fixed_text_map[param][0].setText(f'{int(self.G)}', log=False)
+            fixed_text_map[param][0].setColor("blue", colorSpace='rgb')
+            fixed_text_map[param][1].setText(f'{0}', log=False)
+            fixed_text_map[param][1].setColor("black", colorSpace='rgb')
+        else: # param == "x1neg"
+            if current_trial == 1:
+                bound[0] = self.param_est[method]['L']
+            fixed_text_map[param][0].setText(f'{0}', log=False)
+            fixed_text_map[param][0].setColor("black", colorSpace='rgb')
+            L_val = self.param_est[method]['L']
+            fixed_text_map[param][1].setText(f"{int(L_val)}", log=False)
+            fixed_text_map[param][1].setColor(self.get_color(L_val), colorSpace='rgb')
 
 
     def ChoiceUpdate(self, param, updated_lottery_value) -> str:
         '''Return the Participant's Choice (Left or Right)'''
         self.CheckValidInput(param = param)
-
-        def get_color(value: int) -> str:
-            if value == 0:
-                return "black"
-            else:
-                color_map = {True: "blue", False: "red"}
-                return color_map[value>=0]
         # Choice Pair Update
         if param == "L":
             self.text_Adown_Choice.setText(f"{int(updated_lottery_value)}", log=False)
-            self.text_Adown_Choice.setColor(get_color(updated_lottery_value), colorSpace='rgb')
+            self.text_Adown_Choice.setColor(self.get_color(updated_lottery_value), colorSpace='rgb')
         elif param == "x1pos" or param == "x1neg":
             self.text_Bmid_Choice.setText(f"{int(updated_lottery_value)}", log=False)
-            self.text_Bmid_Choice.setColor(get_color(updated_lottery_value), colorSpace='rgb')
+            self.text_Bmid_Choice.setColor(self.get_color(updated_lottery_value), colorSpace='rgb')
         
         # Choice update
-        trial_choice = choice(self.win, self.thisExp, self.choice_image, self.choice_instruct,
-                              self.text_Adown_Choice, self.text_Bmid_Choice, self.key_choice, self.choosen_rect,
-                              self.confirm_text, self.confirm_resp,
+        trial_choice = choice(self.win, self.thisExp, self.choice_image, self.choice_instruct, 
+                              self.text_Aup_Choice, self.text_Adown_Choice, self.text_Bmid_Choice,
+                              self.key_choice, self.choosen_rect, self.confirm_text, self.confirm_resp,
                               self.routineTimer, self.defaultKeyboard)        
         try:
             return trial_choice
@@ -198,6 +212,7 @@ class Experiment():
 
 
     def HistoryUpdate(self, trial:int, choice:str, param:str, method:str, eval_quan:int):
+        '''Store Choice and Lottery Values for Final bonus calculate'''
         self.CheckValidInput(param = param, method = method)
 
         self.est_history[method][param].append(eval_quan)
@@ -211,10 +226,9 @@ class Experiment():
         pass
 
 
-    def BisectionTrial(self, current_trial, current_bisect, param, bound,
-                        n_bisect=10, stumuli_path = "./Stimuli"):
+    def BisectionTrial(self, current_trial, current_bisect, param, bound, n_bisect=10):
         # Setup Choice-Pair Background
-        self.StimSetup(bound, param, "Bisection", current_bisect, stumuli_path)
+        self.StimSetup(bound, param, "Bisection", current_bisect)
         if (param == "x1neg") & (current_bisect == 1):
             bound[0] = self.param_est["Bisection"]["L"]
         # Bisection update
@@ -270,8 +284,7 @@ class Experiment():
         return bound
 
 
-    def PESTTrial(self, current_trial, current_PEST, param, bound,
-                  PEST_params, minimal_step, stumuli_path = "./Stimuli") -> dict:
+    def PESTTrial(self, current_trial, current_PEST, param, bound, PEST_params, minimal_step) -> tuple:
         eval_quan = PEST_params["eval_quan"] # updating lottery value: int
         step = PEST_params["step"] # step size: int
         last_choices = PEST_params["last_choices"] # last 4 choices: list
@@ -289,7 +302,7 @@ class Experiment():
             return step
         
         # Setup Choice-Pair Background
-        self.StimSetup(bound, param, "PEST", current_PEST, stumuli_path)
+        self.StimSetup(bound, param, "PEST", current_PEST)
         if (param == "x1neg") & (current_PEST == 1):
             bound[0] = self.param_est["PEST"]["L"]
 
@@ -361,8 +374,10 @@ class Experiment():
         return updated_params, converge
 
 
-    def SliderTrial(self, current_trial, current_bisect, param, bound: np.array, 
-                    stumuli_path = "./Stimuli") -> None:
+    def SliderTrial(self, current_trial, current_bisect, param, bound: np.array) -> None:
+        # Setup Choice-Pair Background
+        self.StimSetup(bound, param, "Slider", current_bisect, isSlider = True)
+        # functions
         def multOf5Low(expand): # closest lower multiple of 5
             return int((expand // 5) * 5)
         def multOf5Up(n): # closest upper multiple of 5
@@ -374,13 +389,9 @@ class Experiment():
             return [int(a2), int(b2)]
         expand = (bound[1] - bound[0])//2 # half of range
         new_bound = adjust_to_multiples_of_5([(bound[0] - expand), (bound[1] + expand)])
-        # self.slider.labels = [str(i) for i in new_bound] # don't show bound
         self.slider.ticks = [ i for i in range(new_bound[0], new_bound[1]+1, 5)]
         self.slider.rating = multOf5Low(sum(new_bound)//2 ) # midpoint
         self.slider.markerPos = multOf5Low(sum(new_bound)//2 ) # midpoint
-
-        # Setup Choice-Pair Background
-        self.StimSetup(bound, param, "Slider", current_bisect, stumuli_path, isSlider = True)
 
         # Record Trial Information
         self.thisExp.addData('Trial', current_trial)
@@ -390,7 +401,7 @@ class Experiment():
         self.thisExp.addData('indiff_bound', new_bound)
         indiff = slider_task(self.win, self.thisExp, param,
                              self.choice_image, self.choice_instruct, self.slider,
-                             self.text_Adown_Choice, self.text_Bmid_Choice, 
+                             self.text_Aup_Choice, self.text_Adown_Choice, self.text_Bmid_Choice, 
                              self.confirm_text, self.confirm_resp,
                              self.routineTimer, self.defaultKeyboard)
 
@@ -432,3 +443,11 @@ class Experiment():
         if method not in allowed_methods:
             raise ValueError(f"Invalid method: {method}. Expected one of {allowed_methods}")
         pass
+
+
+    def get_color(self, value: int) -> str:
+        if value == 0:
+            return "black"
+        else:
+            color_map = {True: "blue", False: "red"}
+            return color_map[value>=0]
