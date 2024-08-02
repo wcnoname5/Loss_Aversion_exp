@@ -378,8 +378,8 @@ class Experiment():
         # Setup Choice-Pair Background
         self.StimSetup(bound, param, "Slider", current_bisect, isSlider = True)
         # functions
-        def multOf5Low(expand): # closest lower multiple of 5
-            return int((expand // 5) * 5)
+        def multOf5Low(n): # closest lower multiple of 5
+            return int((n // 5) * 5)
         def multOf5Up(n): # closest upper multiple of 5
             return int(((n + 4) // 5) * 5)
         def adjust_to_multiples_of_5(lst):

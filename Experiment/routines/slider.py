@@ -189,10 +189,11 @@ def slider_task(win, thisExp, param,
 
         # if thisFrame%5 == 0:
         #     print(f'{keyStatus}, Is sliding: {sliding}, {thisFrame}')
-        
+        def multOf5Low(val:int): # closest lower multiple of 5
+            return int((val // 5) * 5)
         if sliding != 0:
             if oldRating == -1:
-                slider.markerPos = int((slider_ticks[0]+slider_ticks[-1])//2)
+                slider.markerPos = multOf5Low((slider_ticks[0]+slider_ticks[-1])//2)
             if thisFrame%slideSpeed == 0:
                 slider.markerPos += sliding
             slider.rating = slider.markerPos
