@@ -3,8 +3,7 @@ from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
 from psychopy.hardware import keyboard
 
-def instruction(win, thisExp, routineTimer, defaultKeyboard, **kwargs):
-    size = kwargs.get("size", (1280, 7280)) # (1920, 1080)
+def instruction(win, thisExp, routineTimer, defaultKeyboard, size):
     # --- Initialize components for Routine "inst" ---
     key_inst = keyboard.Keyboard()
     img_inst = visual.ImageStim(
@@ -43,6 +42,7 @@ def instruction(win, thisExp, routineTimer, defaultKeyboard, **kwargs):
     # --- Run Routine "inst" ---
     routineForceEnded = not continueRoutine
     while continueRoutine:
+        win.mouseVisible = False
         # get current time
         t = routineTimer.getTime()
         tThisFlip = win.getFutureFlipTime(clock=routineTimer)

@@ -135,10 +135,10 @@ End = {"name": "tmp_End",
              "height": 48}
 
 # ---------------Setup-----------------
-n_bisect = 10 # 10
+n_bisect = 10 
+# n_bisect = 8 # 10
 params = ["L", "x1pos", "x1neg"] 
 # params = ["L","x1neg"] # for testing
-stumuli_path = "./Stimuli" 
 # Initial parameter bounds 
 bounds = {
     "L": np.array((-G*2, 0)),
@@ -148,8 +148,9 @@ bounds = {
 minimal_step = 5 # stop criterion, 5
 trial = 0
 
-## Experiment start
-
+## ---------Experiment Start-----------
+# instruction
+Exp.instruction()
 for param in params:
     bound = bounds[param]
     bisect_bound = bounds[param].copy()
@@ -172,6 +173,7 @@ for param in params:
         Exp.text_only(text_config=fixation, duration=0.5)
         if run_PEST:
             PEST_trial += 1
+            # PESTconv = True
             if not PESTconv:
                 PEST_params, PESTconv = Exp.PESTTrial(trial, PEST_trial, param, bound, PEST_params, minimal_step)
             else: # if PEST converge before bisection end

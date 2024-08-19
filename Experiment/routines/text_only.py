@@ -33,6 +33,7 @@ def text_only(textStim, duration, win, thisExp, routineTimer, defaultKeyboard):
     # --- Run Routine "showText" ---
     routineForceEnded = not continueRoutine
     while continueRoutine and routineTimer.getTime() < duration:
+        win.mouseVisible = False
         # get current time
         t = routineTimer.getTime()
         tThisFlip = win.getFutureFlipTime(clock=routineTimer)

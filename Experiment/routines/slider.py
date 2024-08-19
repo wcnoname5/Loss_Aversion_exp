@@ -62,6 +62,7 @@ def slider_task(win, thisExp, param,
     # --- Run Routine "slider_task" ---
     routineForceEnded = not continueRoutine
     while continueRoutine:
+        win.mouseVisible = False
         # get current time
         t = routineTimer.getTime()
         tThisFlip = win.getFutureFlipTime(clock=routineTimer)
@@ -198,7 +199,7 @@ def slider_task(win, thisExp, param,
                 slider.markerPos += sliding
             slider.rating = slider.markerPos
             thisFrame += 1 # Increment the frame counter
-            if thisFrame > 40:
+            if thisFrame > 20:
                 if thisFrame%20 == 0:
                     slider_granularity += 5
                     slideSpeed = max(slideSpeed-3, 1)

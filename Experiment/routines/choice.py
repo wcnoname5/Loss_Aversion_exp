@@ -52,6 +52,7 @@ def choice(win, thisExp,
     # --- Run Routine "choice" ---
     routineForceEnded = not continueRoutine
     while continueRoutine:
+        win.mouseVisible = False
         # get current time
         t = routineTimer.getTime()
         tThisFlip = win.getFutureFlipTime(clock=routineTimer)
@@ -179,14 +180,14 @@ def choice(win, thisExp,
                 key_choice.keys = _key_choice_allKeys[-1].name  # just the last key pressed
                 key_choice.rt = _key_choice_allKeys[-1].rt
                 key_choice.duration = _key_choice_allKeys[-1].duration
-                print(key_choice.keys)
+                # print(key_choice.keys)
                 key_choice.clearEvents()
                 # update choice:
                 if key_choice.keys == 'f':
-                    chosen_text = "A"
+                    chosen_text = "F"
                     rect_pos = (-x, y)
                 elif key_choice.keys == 'j':
-                    chosen_text = "B"
+                    chosen_text = "J"
                     rect_pos = (x, y)
                 conf_text = f"{chosen_text} Chosen \n Press Space to Confirm"
 

@@ -42,7 +42,7 @@ class Experiment():
             ori=0.0, anchor='center',
             # pos=(262.5, -165), width=90, height=90,
             pos=(262.5*2, 165*2), width=180, height=180,
-            lineWidth=2.0, colorSpace='rgb', lineColor='red', fillColor=None,
+            lineWidth=3.0, colorSpace='rgb', lineColor='red', fillColor=None,
             opacity=None, depth=-5.0, interpolate=True)
         self.key_choice = keyboard.Keyboard()
 
@@ -134,7 +134,7 @@ class Experiment():
         }
 
     def instruction(self):
-        instruction(self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
+        instruction(self.win, self.thisExp, self.routineTimer, self.defaultKeyboard, self.size)
 
     # def break_screen(self):
     #     break_screen(self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
@@ -147,7 +147,7 @@ class Experiment():
         text_only(self.textStim, duration, self.win, self.thisExp, self.routineTimer, self.defaultKeyboard)
 
 
-    def StimSetup(self, bound, param: str, method: str, current_trial, **kwargs) -> None:
+    def StimSetup(self, param: str, method: str, **kwargs) -> None:
         '''Setup the gamble set, Background texts'''
         self.CheckValidInput(param = param, method = method)
         
@@ -178,13 +178,14 @@ class Experiment():
             fixed_text_map[param][1].setText(f'{0}', log=False)
             fixed_text_map[param][1].setColor("black", colorSpace='rgb')
         else: # param == "x1neg"
-            if current_trial == 1:
-                bound[0] = self.param_est[method]['L']
             fixed_text_map[param][0].setText(f'{0}', log=False)
             fixed_text_map[param][0].setColor("black", colorSpace='rgb')
-            L_val = self.param_est[method]['L']
+            if isSlider:
+                L_val = self.param_est['Bisection']['L']
+            else:
+                L_val = self.param_est[method]['L']
             fixed_text_map[param][1].setText(f"{int(L_val)}", log=False)
-            fixed_text_map[param][1].setColor(self.get_color(L_val), colorSpace='rgb')
+            fixed_text_map[param][1].setColor(self.GetColor(L_val), colorSpace='rgb')
 
 
     def ChoiceUpdate(self, param, updated_lottery_value) -> str:
@@ -193,10 +194,10 @@ class Experiment():
         # Choice Pair Update
         if param == "L":
             self.text_Adown_Choice.setText(f"{int(updated_lottery_value)}", log=False)
-            self.text_Adown_Choice.setColor(self.get_color(updated_lottery_value), colorSpace='rgb')
+            self.text_Adown_Choice.setColor(self.GetColor(updated_lottery_value), colorSpace='rgb')
         elif param == "x1pos" or param == "x1neg":
             self.text_Bmid_Choice.setText(f"{int(updated_lottery_value)}", log=False)
-            self.text_Bmid_Choice.setColor(self.get_color(updated_lottery_value), colorSpace='rgb')
+            self.text_Bmid_Choice.setColor(self.GetColor(updated_lottery_value), colorSpace='rgb')
         
         # Choice update
         trial_choice = choice(self.win, self.thisExp, self.choice_image, self.choice_instruct, 
@@ -228,26 +229,26 @@ class Experiment():
 
     def BisectionTrial(self, current_trial, current_bisect, param, bound, n_bisect=10):
         # Setup Choice-Pair Background
-        self.StimSetup(bound, param, "Bisection", current_bisect)
+        self.StimSetup(param, "Bisection")
         if (param == "x1neg") & (current_bisect == 1):
             bound[0] = self.param_est["Bisection"]["L"]
         # Bisection update
         if (current_bisect <= n_bisect):
             eval_quan = sum(bound)//2
-        # If other consistnecy check needed
-        elif (current_bisect == n_bisect + 1): 
-            ConsistCheckTrial = 4
-            eval_quan = self.est_history['Bisection'][param][ConsistCheckTrial]
-            self.thisExp.addData('Consist_Check_Trial', ConsistCheckTrial)
-            pass
-        elif (current_bisect == n_bisect + 2): 
-            ConsistCheckTrial = 6
-            eval_quan = self.est_history['Bisection'][param][ConsistCheckTrial]
-            self.thisExp.addData('Consist_Check_Trial', ConsistCheckTrial)
-            pass
         else: # consistency check
-            ConsistCheckTrial = ((current_bisect+2)%n_bisect)-1
-            eval_quan = self.est_history['Bisection'][param][ConsistCheckTrial]
+            # ConsistCheckTrial = ((current_bisect+2)%n_bisect)-1
+            def repeatedTrial(rep_seq = [4, 6]):
+                ExtraTrial = ((current_bisect-1) % n_bisect)
+                for num in range(1, n_bisect+1): # the sequence
+                    if num not in rep_seq:
+                        rep_seq.append(num)
+                # Return the element at the given index
+                if 0 <= ExtraTrial < len(rep_seq):
+                    return rep_seq[ExtraTrial]
+                else:
+                    return "Index out of range"
+            ConsistCheckTrial = repeatedTrial()
+            eval_quan = self.est_history['Bisection'][param][ConsistCheckTrial-1]
             self.thisExp.addData('Consist_Check_Trial', ConsistCheckTrial)
              
         print(f"Bisection: {param}-{current_bisect}; {eval_quan}, Total Trial:{current_trial}")
@@ -274,8 +275,10 @@ class Experiment():
                 bound[1] = eval_quan
             else:
                 bound[0] = eval_quan
-
-        self.thisExp.addData('indiff_bound', bound)
+        # Store indiff bound only for non-consistency check bounds
+        if current_bisect <= n_bisect: 
+            self.thisExp.addData('indiff_bound', bound)
+        else: pass
         if current_bisect == n_bisect:
             self.param_est["Bisection"][param] = sum(bound)//2
         else: pass
@@ -292,7 +295,7 @@ class Experiment():
         # function: find initial step 
         def InitStepSize(bound):
             """
-            Step size = 5 times powers of 2, and is smaller than 1/2 of the interval size.
+            Step size = 5 times 2^k, and is smaller than 1/2 of the interval size.
             """
             # Ensure n is greater than 1
             interval = bound[1] - bound[0]
@@ -302,7 +305,7 @@ class Experiment():
             return step
         
         # Setup Choice-Pair Background
-        self.StimSetup(bound, param, "PEST", current_PEST)
+        self.StimSetup(param, "PEST")
         if (param == "x1neg") & (current_PEST == 1):
             bound[0] = self.param_est["PEST"]["L"]
 
@@ -376,7 +379,7 @@ class Experiment():
 
     def SliderTrial(self, current_trial, current_bisect, param, bound: np.array) -> None:
         # Setup Choice-Pair Background
-        self.StimSetup(bound, param, "Slider", current_bisect, isSlider = True)
+        self.StimSetup(param, "Slider", isSlider = True)
         # functions
         def multOf5Low(n): # closest lower multiple of 5
             return int((n // 5) * 5)
@@ -445,7 +448,7 @@ class Experiment():
         pass
 
 
-    def get_color(self, value: int) -> str:
+    def GetColor(self, value: int) -> str:
         if value == 0:
             return "black"
         else:
